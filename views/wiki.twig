@@ -5,7 +5,7 @@
         <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
     {% endif %}
     {% if user %}
-        <p><a href="/wiki/create" class="article-button">Create Article</a></p>
+        <p><a href="/wiki/create" class="article-button">Create Article</a> <a href="/wiki/upload" class="article-button">Upload Image</a></p>
         <hr>
     {% endif %}
     <h1>Index of Articles</h1>

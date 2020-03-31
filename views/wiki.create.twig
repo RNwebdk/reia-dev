@@ -4,8 +4,8 @@
     {% if flash %}
         <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
     {% endif %}
-    {% if formInput or slug %}
-        <h1>{{ formInput ? formInput.title|e : slug|e }}</h1>
+    {% if form_input or slug %}
+        <h1>{{ form_input ? form_input.title|e : slug|e }}</h1>
     {% else %}
         <h1>Create Article</h1>
     {% endif %}

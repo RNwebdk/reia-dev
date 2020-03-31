@@ -117,6 +117,14 @@ $router->post("/wiki/search", function () use ($db, $twig, $userModel) {
     $controller = new WikiController($db, $twig, $userModel);
     $controller->searchPost();
 });
+$router->get("/wiki/upload", function () use ($db, $twig, $userModel) {
+    $controller = new WikiController($db, $twig, $userModel);
+    $controller->uploadGet();
+});
+$router->post("/wiki/upload", function () use ($db, $twig, $userModel) {
+    $controller = new WikiController($db, $twig, $userModel);
+    $controller->uploadPost();
+});
 $router->set404(function () use ($db, $twig) {
     header("HTTP/1.1 404 Not Found");
     echo $twig->render("404.twig", ["title" => "404 Not Found"]);

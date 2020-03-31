@@ -1,5 +1,6 @@
 # PHP files.
 /composer.lock
 /vendor
+/uploads
 /config.ini
 /articles.json

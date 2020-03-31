@@ -98,8 +98,10 @@ class LoginController {
     }
     public function indexGet() {
         $flash = get_flash();
+        $formInput = get_form_input();
         $csrfToken = get_csrf_token();
         destroy_flash();
+        destroy_form_input();
         $userId = $_SESSION["user-id"] ?? null;
 
         if ($userId && $_SESSION["is-authenticated"]) {
@@ -107,7 +109,7 @@ class LoginController {
             header("Location: /profile");
             exit();
         }
-        echo $this->view->render("login.twig", ["title" => "Login", "flash" => $flash, "csrf_token" => $csrfToken]);
+        echo $this->view->render("login.twig", ["title" => "Login", "flash" => $flash, "form_input" => $formInput, "csrf_token" => $csrfToken]);
     }
     public function indexPost() {
         $csrfToken = $_POST["csrf-token"];
@@ -460,5 +462,73 @@ class WikiController {
         $searchTerm = $_POST["search-term"];
         header("Location: /wiki/search/" . $searchTerm);
         exit();
+    }
+    public function uploadGet() {
+        $flash = get_flash();
+        $csrfToken = get_csrf_token();
+        destroy_flash();
+        $userId = $_SESSION["user-id"] ?? null;
+
+        if (!$userId || !$_SESSION["is-authenticated"]) {
+            set_flash("Please login to view this page.", "error");
+            header("Location: /wiki");
+            exit();
+        }
+        echo $this->view->render("wiki.upload.twig", ["title" => "Upload", "user" => $this->user, "flash" => $flash, "csrf_token" => $csrfToken]);
+    }
+    public function uploadPost() {
+        $csrfToken = $_POST["csrf-token"];
+        $targetDir = __DIR__ . "/uploads/";
+
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0777);
+        }
+        if ($_FILES["upload"]["error"] === 4) {
+            set_flash("No file uploaded.", "error");
+            header("Location: /wiki/upload");
+            exit();
+        }
+        $targetFile = $targetDir . basename($_FILES["upload"]["name"]);
+        $uploadValid = true;
+        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+        $error = "";
+        $check = getimagesize($_FILES["upload"]["tmp_name"]);
+
+        if (!hash_equals($csrfToken, get_csrf_token())) {
+            $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
+            $uploadValid = false;
+        }
+        if ($check) {
+            $uploadValid = true;
+        } else {
+            $uploadValid = false;
+        }
+        if (file_exists($targetFile)) {
+            $error .= "Image already exists.<br>";
+            $uploadValid = false;
+        }
+        if ($_FILES["upload"]["size"] > 10240) {
+            $error .= "Image too large. Must be 10 KB or less.<br>";
+            $uploadValid = false;
+        }
+        if (!in_array($imageFileType, ["gif", "png", "jpg", "jpeg"])) {
+            $error .= "Invalid image type.<br>";
+            $uploadValid = false;
+        }
+        if (!$uploadValid) {
+            set_flash($error, "error");
+            header("Location: /wiki/upload");
+            exit();
+        } else {
+            if (move_uploaded_file($_FILES["upload"]["tmp_name"], $targetFile)) {
+                set_flash("Uploaded image " . basename($_FILES["upload"]["name"]) . " successfully!", "success");
+                header("Location: /wiki/upload");
+                exit();
+            } else {
+                set_flash("There was an issue uploading your image.", "error");
+                header("Location: /wiki/upload");
+                exit();
+            }
+        }
     }
 }
