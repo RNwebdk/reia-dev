@@ -1,0 +1,4 @@
+# PHP files.
+/composer.lock
+/vendor
+/config.ini

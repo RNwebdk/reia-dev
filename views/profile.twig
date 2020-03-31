@@ -1,0 +1,15 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    <h1>Your Profile</h1>
+    {% if user %}
+        <p>Welcome, {{ user.username|e }}!</p>
+        <p>Your e-mail address is {{ user.email|e }}.</p>
+        {% if user.role == 2 %}
+            <p>You're an administrator.</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

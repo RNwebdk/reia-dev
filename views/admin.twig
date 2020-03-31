@@ -1,0 +1,37 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    <h1>Administrator Panel</h1>
+    {% if user %}
+        <p>Welcome, administrator {{ user.username|e }}!</p>
+    {% endif %}
+    {% if users|length > 0 %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>E-mail Address</th>
+                    <th>Role</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for u in users %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>{{ u.username }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.role }}</td>
+                    <td><a href="/admin/activate/{{ u.id }}">Activate</a> | <a href="/admin/ban/{{ u.id }}">Ban</a><br> | <a href="/admin/promote/{{ u.id }}">Promote</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No inactive users to activate.</p>
+    {% endif %}
+{% endblock %}

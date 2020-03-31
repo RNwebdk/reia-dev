@@ -1,0 +1,26 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    {% if article %}
+        {% if user %}
+            <p><a href="/wiki/update/{{ article.slug|e }}" class="article-button">Update Article</a></p>
+            <hr>
+        {% endif %}
+        <h1>{{ article.title|e }}</h1>
+        <div class="article-body">
+            {{ body|raw }}
+        </div>
+        <div class="clear"></div>
+        <hr>
+        <p class="article-byline"><em>Last modified at {{ article.last_modified|date("Y-m-d H:i:s") }} by <a href="/user/{{ article.modified_by|e }}">{{ article.modified_by|e }}</a>.</em></p>
+    {% elseif slug %}
+        <p><a href="/wiki/create/{{ slug|e }}" class="article-button">Create Article</a></p>
+        <hr>
+        <h1>{{ slug|e }}</h1>
+        <p>The article you're looking for does not exist.</p>
+        <hr>
+    {% endif %}
+{% endblock %}

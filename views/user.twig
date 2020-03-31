@@ -1,0 +1,17 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    <h1>User Profile</h1>
+    {% if user_profile %}
+        <p>Username: {{ user_profile.username|e }}</p>
+        <p>E-mail address: {{ user_profile.email|e }}</p>
+        {% if user_profile.role == 2 %}
+            <p>This user is an administrator.</p>
+        {% endif %}
+    {% else %}
+        <p>No user found by this username.</p>
+    {% endif %}
+{% endblock %}

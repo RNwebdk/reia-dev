@@ -1,0 +1,8 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    <p>&#128679;This site is currently under construction!&#128679;</p>
+{% endblock %}

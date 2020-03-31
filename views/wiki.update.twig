@@ -1,0 +1,30 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    {% if article %}
+        <h1>{{ article.title }}</h1>
+        <form action="/wiki/update/{{ article.slug }}" method="post">
+            <input type="hidden" name="csrf-token" value="{{ csrf_token }}">
+            <div>
+                <label for="input-title">Title</label>
+            </div>
+            <div>
+                <input type="text" name="title" id="input-title" size="60" value="{{ form_input ? form_input.title|e : article.title|e }}">
+            </div>
+            <div>
+                <label for="input-body">Body</label>
+            </div>
+            <div>
+                <textarea name="body" id="input-body" rows="40" cols="160">{{ form_input ? form_input.body|e : article.body|e }}</textarea>
+            </div>
+            <div>
+                <button type="submit">Update Article</button>
+            </div>
+        </form>
+    {% elseif slug %}
+        <p>The article does not exist. Would you like to <a href="/wiki/create/{{ slug|e }}">create</a> it?</p>
+    {% endif %}
+{% endblock %}

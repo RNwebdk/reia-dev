@@ -1,0 +1,163 @@
+html {
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+body {
+    margin: 0;
+}
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+.alert {
+    border: 1px solid #000000;
+    border-radius: 0.25em;
+    padding: 0.75em;
+    width: 24em;
+}
+.alert-error {
+    color: #8b0000;
+    background-color: #ffb6c1;
+}
+.alert-warning {
+    color: #b8860b;
+    background-color: #fafad2;
+}
+.alert-success {
+    color: #006400;
+    background-color: #90ee90;
+}
+.alert-info {
+    color: #00008b;
+    background-color: #add8e6;
+}
+table {
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+th, td {
+    border: 1px solid #000000;
+    padding: 0.5em;
+}
+table tr:nth-child(even) {
+    background-color: #d6d6d6;
+}
+nav {
+    background-color: #cc3300;
+    display: inline-block;
+}
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+nav ul li {
+    display: inline-block;
+    padding: 0 1em 0 1em;
+}
+nav ul li a {
+    color: #ffffff;
+    text-shadow: 2px 2px #000000;
+    font-weight: bold;
+}
+main {
+    margin: 1em;
+}
+footer {
+    margin: 1em;
+}
+article {
+    border: 2px solid #000000;
+    padding: 1em;
+    margin: 1em 0 1em 0;
+}
+img {
+    image-rendering: pixelated;
+}
+.main-header {
+    background-color: #cc3300;
+    border-bottom: 2px solid #000000;
+}
+.main-header p {
+    margin: 0;
+    padding: 0.5em;
+    color: #ffffff;
+    text-shadow: 2px 2px #000000;
+    display: inline-block;
+    font-size: 200%;
+    font-weight: bold;
+}
+.main-header a {
+    color: #ffffff;
+    text-shadow: 2px 2px #000000;
+}
+.infobox {
+    float: right;
+}
+.clear {
+    clear: both;
+}
+table.infobox {
+    min-width: 16em;
+    width: 20em;
+    margin: 0.5em;
+}
+table.infobox th, td {
+    padding: 0.5em;
+}
+.table-of-contents {
+    border: 1px solid #cccccc;
+    background-color: #f8f8f8;
+    width: 20em;
+    padding: 1em 1em 1em 2em;
+}
+.invalid-link {
+    color: #ff0000;
+}
+hr {
+    border: 1px solid #000000;
+    box-shadow: 2px 2px #cc3300;
+}
+.article-byline {
+    font-size: 90%;
+}
+article.search-result {
+    padding: 0;
+}
+.search-result h2 {
+    margin: 0.5em;
+}
+.search-result .article-byline {
+    margin: 0.5em;
+}
+.logo {
+    vertical-align: middle;
+    margin-right: 0.25em;
+}
+textarea {
+    max-width: 100%;
+}
+input {
+    max-width: 100%;
+}
+.article-button {
+    border: 1px solid #cccccc;
+    background-color: #f8f8f8;
+    padding: 0.5em;
+}
+@media (min-width: 320px) and (max-width: 480px) {
+    table.infobox {
+        display: block;
+        float: none;
+        margin: auto;
+        max-width: 100%;
+    }
+    .table-of-contents {
+        margin: auto;
+        max-width: 100%;
+    }
+}

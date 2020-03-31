@@ -1,0 +1,28 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    <h1>Search</h1>
+    <form action="/wiki/search" method="post">
+        <label for="input-search">Search </label>
+        <input type="text" name="search-term" id="input-search">
+        <button type="submit">Go</button>
+    </form>
+    {% if search_term %}
+        <p>Fetching results for &quot;{{ search_term|e }}&quot;:</p>
+        {% if articles|length > 0 %}
+            {% for article in articles %}
+                <article class="search-result">
+                    <h2><a href="/wiki/article/{{ article.slug|e }}">{{ article.title|e }}</a></h2>
+                    <p class="article-byline"><em>Last modified at {{ article.last_modified|date("Y-m-d H:i:s") }} by <a href="/user/{{ article.modified_by|e }}">{{ article.modified_by|e }}</a>.</em></p>
+                </article>
+            {% endfor %}
+        {% else %}
+            <p>No articles found using the search parameters.</p>
+        {% endif %}
+    {% else %}
+        <p>No search terms entered.</p>
+    {% endif %}
+{% endblock %}

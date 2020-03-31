@@ -1,0 +1,26 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    <h1>Login</h1>
+    <form action="/login" method="post">
+        <input type="hidden" name="csrf-token" value="{{ csrf_token }}">
+        <div>
+            <label for="input-username">Username</label>
+        </div>
+        <div>
+            <input type="text" name="username" id="input-username">
+        </div>
+        <div>
+            <label for="input-password">Password</label>
+        </div>
+        <div>
+            <input type="password" name="password" id="input-password">
+        </div>
+        <div>
+            <button type="submit">Login</button>
+        </div>
+    </form>
+{% endblock %}

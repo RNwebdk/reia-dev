@@ -1,0 +1,30 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    {% if formInput or slug %}
+        <h1>{{ formInput ? formInput.title|e : slug|e }}</h1>
+    {% else %}
+        <h1>Create Article</h1>
+    {% endif %}
+    <form action="/wiki/create" method="post">
+        <input type="hidden" name="csrf-token" value="{{ csrf_token }}">
+        <div>
+            <label for="input-title">Title</label>
+        </div>
+        <div>
+            <input type="text" name="title" id="input-title" size="60" value="{{ form_input ? form_input.title|e : slug|e }}">
+        </div>
+        <div>
+            <label for="input-body">Body</label>
+        </div>
+        <div>
+            <textarea name="body" id="input-body" rows="40" cols="160">{{ form_input ? form_input.body|e : "" }}</textarea>
+        </div>
+        <div>
+            <button type="submit">Create Article</button>
+        </div>
+    </form>
+{% endblock %}
