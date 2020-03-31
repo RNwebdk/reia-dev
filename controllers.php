@@ -1,15 +1,4 @@
 <?php
-/*
-class Controller {
-    private $model;
-    private $view;
-
-    function __construct($db, $view) {
-        $this->model = new Model($db);
-        $this->view = $view;
-    }
-}
-*/
 class IndexController {
     private $model;
     private $view;

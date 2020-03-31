@@ -7,15 +7,6 @@ error_reporting(-1);
 if (file_exists("config.ini")) {
     $config = parse_ini_file("config.ini", true);
 }
-/*
-If config.ini doesn't exist, it should look like this:
-
-[database]
-db_host = ""
-db_name = ""
-db_user = ""
-db_pass = ""
-*/
 require_once __DIR__ . "/vendor/autoload.php";
 require_once __DIR__ . "/database.php";
 require_once __DIR__ . "/models.php";

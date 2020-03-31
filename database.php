@@ -12,24 +12,6 @@ $db_options = [
 ];
 try {
     $db = new PDO($dsn, $db_user, $db_pass, $db_options);
-/*
-    $db->exec("CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        username TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        role INTEGER
-    )");
-    $db->exec("CREATE TABLE IF NOT EXISTS articles (
-        id SERIAL PRIMARY KEY,
-        title TEXT NOT NULL UNIQUE,
-        slug TEXT NOT NULL UNIQUE,
-        body TEXT,
-        created_at TIMESTAMP NOT NULL,
-        last_modified TIMESTAMP NOT NULL,
-        modified_by TEXT REFERENCES users(username)
-    )");
-*/
 } catch (PDOException $e) {
     throw new PDOException($e->getMessage(), (int) $e->getCode());
 }
