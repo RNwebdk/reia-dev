@@ -4,8 +4,8 @@ class IndexController {
     private $view;
     private $user;
 
-    function __construct($db, $view, $userModel) {
-        $this->model = new WikiModel($db);
+    public function __construct($db, $view, $userModel) {
+        $this->model = new UserModel($db);
         $this->view = $view;
 
         if (!empty($_SESSION["user-id"]) || !empty($_SESSION["is-authenticated"])) {
@@ -27,7 +27,7 @@ class RegisterController {
     private $model;
     private $view;
 
-    function __construct($db, $view) {
+    public function __construct($db, $view) {
         $this->model = new RegisterModel($db);
         $this->view = $view;
     }
@@ -92,7 +92,7 @@ class LoginController {
     private $model;
     private $view;
 
-    function __construct($db, $view) {
+    public function __construct($db, $view) {
         $this->model = new LoginModel($db);
         $this->view = $view;
     }
@@ -163,7 +163,7 @@ class UserController {
     private $view;
     private $user;
 
-    function __construct($db, $view, $userModel) {
+    public function __construct($db, $view, $userModel) {
         $this->model = new UserModel($db);
         $this->view = $view;
 
@@ -323,7 +323,7 @@ class WikiController {
     private $view;
     private $user;
 
-    function __construct($db, $view, $userModel) {
+    public function __construct($db, $view, $userModel) {
         $this->model = new WikiModel($db);
         $this->view = $view;
 
