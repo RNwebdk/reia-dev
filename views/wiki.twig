@@ -11,9 +11,10 @@
     <h1>Index of Articles</h1>
     {% if articles|length > 0 %}
         <form action="/wiki/search" method="post">
-            <label for="input-search">Search </label>
-            <input type="text" name="search-term" id="input-search">
-            <button type="submit">Go</button>
+            <div class="search-container">
+                <input type="text" name="search-term" id="input-search" class="search-box" placeholder="Search...">
+                <button type="submit" class="search-button">Go</button>
+            </div>
         </form>
         <ul>
         {% for article in articles %}

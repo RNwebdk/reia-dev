@@ -6,9 +6,10 @@
     {% endif %}
     <h1>Search</h1>
     <form action="/wiki/search" method="post">
-        <label for="input-search">Search </label>
-        <input type="text" name="search-term" id="input-search">
-        <button type="submit">Go</button>
+        <div class="search-container">
+            <input type="text" name="search-term" id="input-search" class="search-box" placeholder="Search...">
+            <button type="submit" class="search-button">Go</button>
+        </div>
     </form>
     {% if search_term %}
         <p>Fetching results for &quot;{{ search_term|e }}&quot;:</p>
