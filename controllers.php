@@ -1,5 +1,5 @@
 <?php
-class IndexController {
+class HomeController {
     private $model;
     private $view;
     private $user;

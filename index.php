@@ -22,11 +22,11 @@ $router = new \Bramus\Router\Router();
 $userModel = new UserModel($db);
 
 $router->get("/", function () use ($db, $twig, $userModel) {
-    $controller = new IndexController($db, $twig, $userModel);
+    $controller = new HomeController($db, $twig, $userModel);
     $controller->indexGet();
 });
 $router->get("/about", function () use ($db, $twig, $userModel) {
-    $controller = new IndexController($db, $twig, $userModel);
+    $controller = new HomeController($db, $twig, $userModel);
     $controller->aboutGet();
 });
 $router->get("/register", function () use ($db, $twig) {
