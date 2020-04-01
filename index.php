@@ -8,14 +8,20 @@ if (file_exists("config.ini")) {
     $config = parse_ini_file("config.ini", true);
 }
 require_once __DIR__ . "/vendor/autoload.php";
-require_once __DIR__ . "/database.php";
-require_once __DIR__ . "/models.php";
-require_once __DIR__ . "/controllers.php";
 require_once __DIR__ . "/bootstrap.php";
+
+use ReiaDev\Database;
+use ReiaDev\Model\UserModel;
+use ReiaDev\Controller\HomeController;
+use ReiaDev\Controller\UserController;
+use ReiaDev\Controller\RegisterController;
+use ReiaDev\Controller\LoginController;
+use ReiaDev\Controller\WikiController;
 
 if (!get_csrf_token()) {
     create_csrf_token();
 }
+$db = (new Database($dsn, $db_user, $db_pass, $db_options))->getPDO();
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . "/views");
 $twig = new \Twig\Environment($loader);
 $router = new \Bramus\Router\Router();

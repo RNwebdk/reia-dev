@@ -3,5 +3,10 @@
         "bramus/router": "^1.4",
         "twig/twig": "^3.0",
         "netcarver/textile": "^3.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "ReiaDev\\": "src/"
+        }
     }
 }
