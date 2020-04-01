@@ -15,7 +15,7 @@
         </div>
         <div class="clear"></div>
         <hr>
-        <p class="article-byline"><em>Last modified at {{ article.last_modified|date("Y-m-d H:i:s") }} by <a href="/user/{{ article.modified_by|e }}">{{ article.modified_by|e }}</a>.</em></p>
+        <p class="article-byline"><em>Last modified at {{ article.last_modified|date("Y-m-d H:i:s") }} by <a href="/user/{{ article.username|e }}">{{ article.username|e }}</a>.</em></p>
     {% elseif slug %}
         <p><a href="/wiki/create/{{ slug|e }}" class="article-button">Create Article</a></p>
         <hr>

@@ -184,9 +184,6 @@ input, button {
     margin-bottom: 0.5em;
     width: 100%;
 }
-.topic-post td {
-    border: 1px solid #cccccc;
-}
 .post-info {
     background-color: #e8e8e8;
     font-size: 90%;
@@ -229,6 +226,42 @@ input, button {
     margin-top: 2em;
     text-align: center;
 }
+.topic-overview {
+    padding: 0;
+    border: 1px solid #cccccc;
+    background-color: #f8f8f8;
+    display: table;
+    border-collapse: collapse;
+    width: 100%;
+}
+.topic-overview p {
+    padding: 0.5em;
+}
+.topic-section {
+    display: table-row;
+}
+.topic-section:not(:last-child) {
+    border-bottom: 1px solid #cccccc;
+}
+.topic-section:nth-child(even) {
+    background-color: #ffffff;
+}
+.topic-subject {
+    display: table-cell;
+    border-right: 1px solid #cccccc;
+}
+.topic-replies {
+    display: table-cell;
+    border-right: 1px solid #cccccc;
+    text-align: center;
+}
+.topic-started-by {
+    display: table-cell;
+    border-right: 1px solid #cccccc;
+}
+.topic-last-reply {
+    display: table-cell;
+}
 @media (min-width: 320px) and (max-width: 480px) {
     table.infobox {
         display: block;
@@ -254,5 +287,8 @@ input, button {
     }
     .post-body, .post-user, .post-content {
         display: block;
+    }
+    .topic-overview {
+        width: 100%;
     }
 }

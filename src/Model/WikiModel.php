@@ -8,7 +8,7 @@ class WikiModel extends Model {
         return $stmt->fetchAll();
     }
     public function selectBySlug($slug) {
-        $stmt = $this->db->prepare("SELECT id, title, slug, body, created_at, last_modified, modified_by FROM articles WHERE slug = ?");
+        $stmt = $this->db->prepare("SELECT a.id, a.title, a.slug, a.body, a.created_at, a.last_modified, a.modified_by, u.id as user_id, u.username FROM articles a INNER JOIN users u ON a.modified_by = u.id WHERE slug = ?");
         $stmt->execute([$slug]);
         return $stmt->fetch();
     }

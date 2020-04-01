@@ -11,14 +11,26 @@
     <hr>
     <h1>Forums - {{ category.name|e }}</h1>
     {% if topics|length > 0 %}
+        <article class="topic-overview">
+            <section class="topic-section">
+                <p class="topic-subject"><strong>Subject</strong></p>
+                <p class="topic-replies"><strong>Replies</strong></p>
+                <p class="topic-started-by"><strong>Started By</strong></p>
+                <p class="topic-last-reply"><strong>Last Reply</strong></p>
+            </section>
         {% for topic in topics %}
-            <article>
-                <h2><a href="/forum/topic/{{ topic.id }}">{{ topic.subject|e }}</a></h2>
-                <p>Reply count: {{ topic.reply_count }}</p>
-                <p>Started by <a href="/user/{{ topic.username|e }}">{{ topic.username|e }}</a> on {{ topic.created_at|e }}.</p>
-                <p>Last post by <a href="/user/{{ topic.last_reply }}">{{ topic.last_reply }}</a>.</p>
-            </article>
+            <section class="topic-section">
+                <p class="topic-subject"><a href="/forum/topic/{{ topic.id }}">{{ topic.subject|e }}</a></p>
+                <p class="topic-replies">{{ topic.reply_count }}</p>
+                <p class="topic-started-by"><a href="/user/{{ topic.username|e }}">{{ topic.username|e }}</a> ({{ topic.created_at|date("Y-m-d H:i:s") }})</p>
+                {% if topic.last_reply_username %}
+                    <p class="topic-last-reply"><a href="/user/{{ topic.last_reply_username|e }}">{{ topic.last_reply_username|e }}</a> ({{ topic.last_replied_at|date("Y-m-d H:i:s") }})</p>
+                {% else %}
+                    <p class="topic-last-reply">None yet!</p>
+                {% endif %}
+            </section>
         {% endfor %}
+        </article>
     {% else %}
         <p>No topics found.</p>
     {% endif %}

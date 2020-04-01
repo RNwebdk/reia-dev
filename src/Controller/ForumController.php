@@ -68,6 +68,8 @@ class ForumController {
         }
         if (empty($content)) {
             $error .= "Please enter content to post.<br>";
+        } elseif (strlen($content) > 4096) {
+            $error .= "Content cannot be longer than 4096 characters.";
         }
         if (!empty($error)) {
             set_flash($error, "error");
@@ -76,6 +78,7 @@ class ForumController {
             exit();
         } else {
             $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user["id"], $topicId);
+            $this->model->updateTopic($this->user["id"], date("Y-m-d H:i:s"), $topicId);
             set_flash("Post created successfully!", "success");
             header("Location: /forum/topic/" . $topicId);
             exit();

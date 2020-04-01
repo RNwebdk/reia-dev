@@ -13,12 +13,12 @@ class ForumModel extends Model {
         return $stmt->fetch();
     }
     public function selectTopics($categoryId) {
-        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.category_id, u.id AS user_id, u.username FROM topics t INNER JOIN users u ON t.started_by = u.id WHERE category_id = ? ORDER BY t.id ASC");
+        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, u.id AS user_id, u.username, lr.id AS last_reply_id, lr.username AS last_reply_username FROM topics t LEFT JOIN users u ON t.started_by = u.id LEFT JOIN users lr ON t.last_reply = lr.id WHERE category_id = ? ORDER BY t.id ASC");
         $stmt->execute([$categoryId]);
         return $stmt->fetchAll();
     }
     public function selectTopicById($id) {
-        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.category_id, c.name AS category_name FROM topics t INNER JOIN categories c ON t.category_id = c.id WHERE t.id = ?");
+        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, c.name AS category_name FROM topics t INNER JOIN categories c ON t.category_id = c.id WHERE t.id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
@@ -36,16 +36,15 @@ class ForumModel extends Model {
         $stmt->execute([$subject, 0, $createdAt, $startedBy, $categoryId]);
         return $stmt->fetch();
     }
-/*
-    public function insert($title, $slug, $body, $createdAt, $lastModified, $modifiedBy) {
-        $stmt = $this->db->prepare("INSERT INTO articles (title, slug, body, created_at, last_modified, modified_by) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$title, $slug, $body, $createdAt, $lastModified, $modifiedBy]);
-        $this->generateJSON();
+    public function updateTopic($lastReply, $lastRepliedAt, $id) {
+        $replyCount = $this->getReplyCount($id);
+        $stmt = $this->db->prepare("UPDATE topics SET reply_count = ?, last_reply = ?, last_replied_at = ? WHERE id = ?");
+        // We subtract 1 from the reply count, as the opening post of the topic does not count as a reply.
+        $stmt->execute([$replyCount["count"] - 1, $lastReply, $lastRepliedAt, $id]);
     }
-    public function update($title, $body, $lastModified, $modifiedBy, $slug) {
-        $stmt = $this->db->prepare("UPDATE articles SET title = ?, body = ?, last_modified = ?, modified_by = ? WHERE slug = ?");
-        $stmt->execute([$title, $body, $lastModified, $modifiedBy, $slug]);
-        $this->generateJSON();
+    public function getReplyCount($topicId) {
+        $stmt = $this->db->prepare("SELECT COUNT(id) FROM posts WHERE topic_id = ?");
+        $stmt->execute([$topicId]);
+        return $stmt->fetch();
     }
-*/
 }
