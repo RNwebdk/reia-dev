@@ -1,9 +1,7 @@
 <?php
 session_start();
 date_default_timezone_set("America/Chicago");
-ini_set("display_startup_errors", true);
-ini_set("display_errors", true);
-error_reporting(-1);
+
 if (file_exists("config.ini")) {
     $config = parse_ini_file("config.ini", true);
 }
@@ -17,6 +15,7 @@ use ReiaDev\Controller\UserController;
 use ReiaDev\Controller\RegisterController;
 use ReiaDev\Controller\LoginController;
 use ReiaDev\Controller\WikiController;
+use ReiaDev\Controller\ForumController;
 
 if (!get_csrf_token()) {
     create_csrf_token();
@@ -130,6 +129,30 @@ $router->get("/wiki/upload", function () use ($db, $twig, $userModel) {
 $router->post("/wiki/upload", function () use ($db, $twig, $userModel) {
     $controller = new WikiController($db, $twig, $userModel);
     $controller->uploadPost();
+});
+$router->get("/forum", function () use ($db, $twig, $userModel) {
+    $controller = new ForumController($db, $twig, $userModel);
+    $controller->indexGet();
+});
+$router->get("/forum/(\d+)", function ($id) use ($db, $twig, $userModel) {
+    $controller = new ForumController($db, $twig, $userModel);
+    $controller->categoryGet($id);
+});
+$router->get("/forum/topic/(\d+)", function ($id) use ($db, $twig, $userModel) {
+    $controller = new ForumController($db, $twig, $userModel);
+    $controller->topicGet($id);
+});
+$router->post("/forum/topic/(\d+)", function ($id) use ($db, $twig, $userModel) {
+    $controller = new ForumController($db, $twig, $userModel);
+    $controller->topicPost($id);
+});
+$router->get("/forum/create/(\d+)", function ($id) use ($db, $twig, $userModel) {
+    $controller = new ForumController($db, $twig, $userModel);
+    $controller->createGet($id);
+});
+$router->post("/forum/create/(\d+)", function ($id) use ($db, $twig, $userModel) {
+    $controller = new ForumController($db, $twig, $userModel);
+    $controller->createPost($id);
 });
 $router->set404(function () use ($db, $twig) {
     header("HTTP/1.1 404 Not Found");

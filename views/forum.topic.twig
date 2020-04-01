@@ -1,0 +1,47 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    <p><a href="/forum">Forum</a> / <a href="/forum/{{ topic.category_id }}">{{ topic.category_name|e }}</a> / <a href="/forum/topic/{{ topic.id }}">{{ topic.subject|e }}</a></p>
+    <hr>
+    <h1>{{ topic.subject|e }}</h1>
+    {% if posts|length > 0 %}
+        {% for post in posts %}
+            <article class="topic-post">
+                <section class="post-info">
+                    <p>#{{ post.id }}<span class="post-date">{{ post.created_at|date("Y-m-d H:i:s") }}</span></p>
+                </section>
+                <section class="post-body">
+                    <section class="post-user">
+                        <p>
+                            <a href="/user/{{ post.username|e }}" class="post-username">{{ post.username|e }}</a>
+                            <img src="/uploads/duckmobile.png" width="64" height="64" alt="avatar" class="post-avatar">
+                            {% if post.user_role == 2 %}
+                                <span class="post-role-administrator">Administrator</span>
+                            {% endif %}
+                        </p>
+                    </section>
+                    <section class="post-content">
+                        <div>{{ post.content|e }}</div>
+                    </section>
+                </section>
+            </article>
+        {% endfor %}
+    {% else %}
+        <p>No posts found.</p>
+    {% endif %}
+    {% if user %}
+        <form action="/forum/topic/{{ topic.id }}" method="post" class="topic-reply">
+            <caption><strong>Reply</strong></caption>
+            <input type="hidden" name="csrf-token" value="{{ csrf_token }}">
+            <div>
+                <textarea name="content" rows="20" cols="80">{{ form_input ? form_input.content|e : "" }}</textarea>
+            </div>
+            <div>
+                <button type="submit">Post</button>
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}

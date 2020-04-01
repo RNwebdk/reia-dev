@@ -2,11 +2,12 @@
 <nav>
     <ul>
         <li><a href="/wiki">Wiki</a></li>
+        <li><a href="/forum">Forum</a></li>
         <li><a href="/about">About</a></li>
     {% if user %}
-        <li><a href="/profile">Profile ({{ user.username }})</a></li>
+        <li><a href="/profile">Profile</a></li>
     {% if user.role == 2 %}
-        <li><a href="/admin">Admin Panel</a></li>
+        <li><a href="/admin">Administrator</a></li>
     {% endif %}
         <li><a href="/logout">Logout</a></li>
     {% else %}

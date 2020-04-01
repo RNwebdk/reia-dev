@@ -1,0 +1,25 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    <p><a href="/forum">Forum</a> / <a href="/forum/{{ category.id }}">{{ category.name|e }}</a></p>
+    {% if user %}
+        <p><a href="/forum/create/{{ category.id }}" class="article-button">Create Topic</a></p>
+    {% endif %}
+    <hr>
+    <h1>Forums - {{ category.name|e }}</h1>
+    {% if topics|length > 0 %}
+        {% for topic in topics %}
+            <article>
+                <h2><a href="/forum/topic/{{ topic.id }}">{{ topic.subject|e }}</a></h2>
+                <p>Reply count: {{ topic.reply_count }}</p>
+                <p>Started by <a href="/user/{{ topic.username|e }}">{{ topic.username|e }}</a> on {{ topic.created_at|e }}.</p>
+                <p>Last post by <a href="/user/{{ topic.last_reply }}">{{ topic.last_reply }}</a>.</p>
+            </article>
+        {% endfor %}
+    {% else %}
+        <p>No topics found.</p>
+    {% endif %}
+{% endblock %}

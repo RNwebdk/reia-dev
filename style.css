@@ -150,18 +150,6 @@ input {
     background-color: #f8f8f8;
     padding: 0.5em;
 }
-@media (min-width: 320px) and (max-width: 480px) {
-    table.infobox {
-        display: block;
-        float: none;
-        margin: auto;
-        max-width: 100%;
-    }
-    .table-of-contents {
-        margin: auto;
-        max-width: 100%;
-    }
-}
 .search-container {
     display: flex;
     width: 20em;
@@ -188,4 +176,83 @@ input, button {
     background-color: #f8f8f8;
     padding: 0.5em 0.75em;
     border-radius: 0 0.10em 0.10em 0;
+}
+.topic-post {
+    padding: 0;
+    border: 1px solid #cccccc;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    width: 100%;
+}
+.topic-post td {
+    border: 1px solid #cccccc;
+}
+.post-info {
+    background-color: #e8e8e8;
+    font-size: 90%;
+    border-bottom: 1px solid #cccccc;
+}
+.post-info p {
+    margin: 0;
+    padding: 0.5em;
+}
+.post-body {
+    display: table;
+}
+.post-user {
+    padding: 1em;
+    width: 12em;
+    text-align: center;
+    background-color: #f8f8f8;
+    border-right: 1px solid #cccccc;
+    vertical-align: top;
+    display: table-cell;
+}
+.post-content {
+    padding: 1em;
+    display: table-cell;
+}
+.post-date {
+    padding-left: 1em;
+}
+.post-avatar {
+    display: block;
+    margin: 0.75em auto 0 auto;
+}
+.post-role-administrator {
+    font-weight: bold;
+    margin-top: 0.75em;
+    display: block;
+    color: #cc3300;
+}
+.topic-reply {
+    margin-top: 2em;
+    text-align: center;
+}
+@media (min-width: 320px) and (max-width: 480px) {
+    table.infobox {
+        display: block;
+        float: none;
+        margin: auto;
+        max-width: 100%;
+    }
+    .table-of-contents {
+        margin: auto;
+        max-width: 100%;
+    }
+    .alert {
+        max-width: 100%;
+    }
+    .post-user {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #cccccc;
+        vertical-align: top;
+    }
+    .post-user p {
+        margin: 0;
+    }
+    .post-body, .post-user, .post-content {
+        display: block;
+    }
 }

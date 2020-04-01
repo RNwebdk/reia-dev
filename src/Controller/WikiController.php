@@ -79,7 +79,7 @@ class WikiController {
             header("Location: /wiki/create");
             exit();
         } else {
-            $this->model->insert($title, $slug, $body, date("Y-m-d H:i:s"), date("Y-m-d H:i:s"), $this->user["username"]);
+            $this->model->insert($title, $slug, $body, date("Y-m-d H:i:s"), date("Y-m-d H:i:s"), $this->user["id"]);
             set_flash("Wiki article successfully created!", "success");
             header("Location: /wiki/article/" . $slug);
             exit();
@@ -126,7 +126,7 @@ class WikiController {
             header("Location: /wiki/update/" . $getSlug);
             exit();
         } else {
-            $this->model->update($title, $body, date("Y-m-d H:i:s"), $this->user["username"], $getSlug);
+            $this->model->update($title, $body, date("Y-m-d H:i:s"), $this->user["id"], $getSlug);
             set_flash("Wiki article successfully updated!", "success");
             header("Location: /wiki/article/" . $getSlug);
             exit();

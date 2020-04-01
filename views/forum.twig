@@ -1,0 +1,18 @@
+{% extends "base.twig" %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    <h1>Forums</h1>
+    {% if categories|length > 0 %}
+        {% for category in categories %}
+            <article>
+                <h2><a href="/forum/{{ category.id }}">{{ category.name|e }}</a></h2>
+                <p>{{ category.description|e }}</p>
+            </article>
+        {% endfor %}
+    {% else %}
+        <p>No forum categories found.</p>
+    {% endif %}
+{% endblock %}
