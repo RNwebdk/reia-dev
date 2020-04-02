@@ -5,9 +5,11 @@ if (!file_exists("articles.json")) {
     fclose($fp);
 }
 function get_database_config(): array {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
+    $dotenv = new Dotenv\Dotenv();
 
+    if (getenv("APP_ENV") === "development") {
+        $dotenv->load(__DIR__)
+    }
     if (getenv("DATABASE_URL")) {
         $databaseConfig = parse_url(getenv("DATABASE_URL"));
 
