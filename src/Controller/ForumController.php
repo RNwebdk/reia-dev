@@ -21,13 +21,14 @@ class ForumController {
     public function indexGet() {
         $flash = get_flash();
         destroy_flash();
-        $categories = $this->model->selectAll();
+        $categories = $this->model->selectCategories();
+
         echo $this->view->render("forum.twig", ["title" => "Forums", "categories" => $categories, "user" => $this->user, "flash" => $flash]);
     }
     public function categoryGet($categoryId) {
         $flash = get_flash();
         destroy_flash();
-        $category = $this->model->selectById($categoryId);
+        $category = $this->model->selectCategoryById($categoryId);
 
         if ($category) {
             $title = "Forums - " . $category["name"];
@@ -77,8 +78,10 @@ class ForumController {
             header("Location: /forum/topic/" . $topicId);
             exit();
         } else {
+            $topic = $this->model->selectTopicById($topicId);
             $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user["id"], $topicId);
             $this->model->updateTopic($this->user["id"], date("Y-m-d H:i:s"), $topicId);
+            $this->model->updateLatestTopic($topic["category_id"], $topicId);
             set_flash("Post created successfully!", "success");
             header("Location: /forum/topic/" . $topicId);
             exit();
@@ -126,6 +129,7 @@ class ForumController {
 
             if (!empty($topic)) {
                 $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user["id"], $topic["id"]);
+                $this->model->updateLatestTopic($topic["category_id"], $topic["id"]);
                 set_flash("Topic created successfully!", "success");
                 header("Location: /forum/topic/" . $topic["id"]);
                 exit();

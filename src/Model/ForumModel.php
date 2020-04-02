@@ -2,18 +2,18 @@
 namespace ReiaDev\Model;
 
 class ForumModel extends Model {
-    public function selectAll() {
-        $stmt = $this->db->prepare("SELECT id, name, description FROM categories");
+    public function selectCategories() {
+        $stmt = $this->db->prepare("SELECT c.id, c.name, c.description, c.latest_topic, t.id AS topic_id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, u.id AS user_id, u.username  FROM categories c LEFT JOIN topics t ON c.latest_topic = t.id LEFT JOIN users u ON (t.last_reply IS NOT NULL AND t.last_reply = u.id) OR (t.last_reply IS NULL AND t.started_by = u.id) ORDER BY c.id ASC");
         $stmt->execute();
         return $stmt->fetchAll();
     }
-    public function selectById($id) {
+    public function selectCategoryById($id) {
         $stmt = $this->db->prepare("SELECT id, name, description FROM categories WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
     public function selectTopics($categoryId) {
-        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, u.id AS user_id, u.username, lr.id AS last_reply_id, lr.username AS last_reply_username FROM topics t LEFT JOIN users u ON t.started_by = u.id LEFT JOIN users lr ON t.last_reply = lr.id WHERE category_id = ? ORDER BY t.id ASC");
+        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, u.id AS user_id, u.username, lr.id AS last_reply_id, lr.username AS last_reply_username FROM topics t LEFT JOIN users u ON t.started_by = u.id LEFT JOIN users lr ON t.last_reply = lr.id WHERE category_id = ? ORDER BY t.last_replied_at DESC");
         $stmt->execute([$categoryId]);
         return $stmt->fetchAll();
     }
@@ -32,7 +32,7 @@ class ForumModel extends Model {
         $stmt->execute([$content, $createdAt, $startedBy, $topicId]);
     }
     public function insertTopic($subject, $createdAt, $startedBy, $categoryId) {
-        $stmt = $this->db->prepare("INSERT INTO topics (subject, reply_count, created_at, started_by, category_id) VALUES (?, ?, ?, ?, ?) RETURNING id");
+        $stmt = $this->db->prepare("INSERT INTO topics (subject, reply_count, created_at, started_by, category_id) VALUES (?, ?, ?, ?, ?) RETURNING id, category_id");
         $stmt->execute([$subject, 0, $createdAt, $startedBy, $categoryId]);
         return $stmt->fetch();
     }
@@ -46,5 +46,12 @@ class ForumModel extends Model {
         $stmt = $this->db->prepare("SELECT COUNT(id) FROM posts WHERE topic_id = ?");
         $stmt->execute([$topicId]);
         return $stmt->fetch();
+    }
+    public function updateLatestTopic($categoryId, $topicId) {
+        $stmt = $this->db->prepare("SELECT id FROM categories WHERE id = ?");
+        $stmt->execute([$categoryId]);
+        $category = $stmt->fetch();
+        $stmt = $this->db->prepare("UPDATE categories SET latest_topic = ? WHERE id = ?");
+        $stmt->execute([$topicId, $category["id"]]);
     }
 }

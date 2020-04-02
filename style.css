@@ -234,6 +234,31 @@ input, button {
     border-collapse: collapse;
     width: 100%;
 }
+.category-overview {
+    padding: 0;
+    border: 1px solid #cccccc;
+    background-color: #f8f8f8;
+    display: table;
+    border-collapse: collapse;
+    width: 100%;
+}
+.category-head {
+    display: table-cell;
+    border-right: 1px solid #cccccc;
+    width: 60%;
+}
+.category-foot {
+    display: table-cell;
+}
+.category-description {
+    display: block;
+}
+.topic-byline {
+    display: block;
+}
+.category-overview p {
+    padding: 0.5em;
+}
 .topic-overview p {
     padding: 0.5em;
 }
@@ -288,7 +313,10 @@ input, button {
     .post-body, .post-user, .post-content {
         display: block;
     }
-    .topic-overview {
-        width: 100%;
+    .topic-started-by {
+        display: none;
+    }
+    .category-description {
+        display: none;
     }
 }

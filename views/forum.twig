@@ -7,9 +7,15 @@
     <h1>Forums</h1>
     {% if categories|length > 0 %}
         {% for category in categories %}
-            <article>
-                <h2><a href="/forum/{{ category.id }}">{{ category.name|e }}</a></h2>
-                <p>{{ category.description|e }}</p>
+            <article class="category-overview">
+                <p class="category-head">
+                    <a href="/forum/{{ category.id }}">{{ category.name|e }}</a>
+                    <span class="category-description">{{ category.description|e }}</span>
+                </p>
+                <p class="category-foot">
+                    <a href="/forum/topic/{{ category.topic_id }}">{{ category.reply_count > 0 ? "Re: " :"" }}{{ category.subject|e }}</a>
+                    <span class="topic-byline">By <a href="/user/{{ category.username|e }}">{{ category.username|e }}</a> ({{ category.last_replied_at ? category.last_replied_at|date("Y-m-d H:i:s") : category.created_at|date("Y-m-d H:i:s") }})</span>
+                </p>
             </article>
         {% endfor %}
     {% else %}
