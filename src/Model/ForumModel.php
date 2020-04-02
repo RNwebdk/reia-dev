@@ -3,7 +3,7 @@ namespace ReiaDev\Model;
 
 class ForumModel extends Model {
     public function selectCategories() {
-        $stmt = $this->db->prepare("SELECT c.id, c.name, c.description, c.latest_topic, t.id AS topic_id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, u.id AS user_id, u.username  FROM categories c LEFT JOIN topics t ON c.latest_topic = t.id LEFT JOIN users u ON (t.last_reply IS NOT NULL AND t.last_reply = u.id) OR (t.last_reply IS NULL AND t.started_by = u.id) ORDER BY c.id ASC");
+        $stmt = $this->db->prepare("SELECT c.id, c.name, c.description, c.latest_topic, t.id AS topic_id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, u.id AS user_id, u.username  FROM categories c LEFT JOIN topics t ON c.latest_topic = t.id LEFT JOIN users u ON COALESCE(t.last_reply, t.started_by) = u.id ORDER BY c.id ASC");
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -13,7 +13,7 @@ class ForumModel extends Model {
         return $stmt->fetch();
     }
     public function selectTopics($categoryId) {
-        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, u.id AS user_id, u.username, lr.id AS last_reply_id, lr.username AS last_reply_username FROM topics t LEFT JOIN users u ON t.started_by = u.id LEFT JOIN users lr ON t.last_reply = lr.id WHERE category_id = ? ORDER BY t.last_replied_at DESC");
+        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, u.id AS user_id, u.username, lr.id AS last_reply_id, lr.username AS last_reply_username FROM topics t LEFT JOIN users u ON t.started_by = u.id LEFT JOIN users lr ON t.last_reply = lr.id WHERE category_id = ? ORDER BY COALESCE(t.last_replied_at, t.created_at) DESC");
         $stmt->execute([$categoryId]);
         return $stmt->fetchAll();
     }

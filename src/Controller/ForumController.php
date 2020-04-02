@@ -56,7 +56,11 @@ class ForumController {
             exit();
         }
         $posts = $this->model->selectPosts($topicId);
+        $parser = new \Netcarver\Textile\Parser();
 
+        foreach ($posts as &$post) {
+            $post["content"] = $parser->setDocumentType("html5")->parse($post["content"]);
+        }
         echo $this->view->render("forum.topic.twig", ["title" => $title, "topic" => $topic, "posts" => $posts, "user" => $this->user, "flash" => $flash, "form_input" => $formInput, "csrf_token" => $csrfToken]);
     }
     public function topicPost($topicId) {
