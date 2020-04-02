@@ -23,7 +23,7 @@ class ForumModel extends Model {
         return $stmt->fetch();
     }
     public function selectPosts($topicId) {
-        $stmt = $this->db->prepare("SELECT p.id, p.content, p.created_at, p.started_by, p.is_modified, p.topic_id, u.id AS user_id, u.username, u.role AS user_role FROM posts p INNER JOIN users u ON p.started_by = u.id WHERE topic_id = ? ORDER BY p.id ASC");
+        $stmt = $this->db->prepare("SELECT p.id, p.content, p.created_at, p.started_by, p.is_modified, p.topic_id, u.id AS user_id, u.username, u.avatar, u.role AS user_role FROM posts p INNER JOIN users u ON p.started_by = u.id WHERE topic_id = ? ORDER BY p.id ASC");
         $stmt->execute([$topicId]);
         return $stmt->fetchAll();
     }

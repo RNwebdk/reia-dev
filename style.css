@@ -290,6 +290,11 @@ input, button {
 .post-update {
     float: right;
 }
+.form-info {
+    font-size: 90%;
+    font-style: italic;
+    margin: 0;
+}
 @media (min-width: 320px) and (max-width: 480px) {
     table.infobox {
         display: block;
@@ -321,5 +326,9 @@ input, button {
     }
     .category-description {
         display: none;
+    }
+    .post-update {
+        float: none;
+        display: block;
     }
 }

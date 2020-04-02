@@ -6,6 +6,9 @@
     {% endif %}
     <h1>User Profile</h1>
     {% if user_profile %}
+        {% if user_profile.avatar %}
+            <p><img src="{{ user_profile.avatar|e }}" width="64" height="64" alt="{{ user_profile.username|e }}"></p>
+        {% endif %}
         <p>Username: {{ user_profile.username|e }}</p>
         <p>E-mail address: {{ user_profile.email|e }}</p>
         {% if user_profile.role == 2 %}

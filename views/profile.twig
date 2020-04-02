@@ -6,10 +6,25 @@
     {% endif %}
     <h1>Your Profile</h1>
     {% if user %}
+        {% if user.avatar %}
+            <p><img src="{{ user.avatar|e }}" width="64" height="64" alt="{{ user.username|e }}"></p>
+        {% endif %}
         <p>Welcome, {{ user.username|e }}!</p>
         <p>Your e-mail address is {{ user.email|e }}.</p>
         {% if user.role == 2 %}
             <p>You're an administrator.</p>
         {% endif %}
+        <form action="/profile" method="post">
+            <div>
+                <label for="input-avatar-url">Update Avatar URL</label>
+                <p class="form-info">Avatar will be resized to 64x64.</p>
+            </div>
+            <div>
+                <input type="text" name="avatar-url" id="input-avatar-url" value="{{ user.avatar ? user.avatar|e : "" }}" size="60">
+            </div>
+            <div>
+                <button type="submit">Update Avatar</button>
+            </div>
+        </form>
     {% endif %}
 {% endblock %}

@@ -2,11 +2,9 @@
 session_start();
 date_default_timezone_set("America/Chicago");
 
-if (file_exists("config.ini")) {
-    $config = parse_ini_file("config.ini", true);
-}
 require_once __DIR__ . "/vendor/autoload.php";
 require_once __DIR__ . "/bootstrap.php";
+require_once __DIR__ . "/config.php";
 
 use ReiaDev\Database;
 use ReiaDev\Model\UserModel;
@@ -20,7 +18,7 @@ use ReiaDev\Controller\ForumController;
 if (!get_csrf_token()) {
     create_csrf_token();
 }
-$db = (new Database($dsn, $db_user, $db_pass, $db_options))->getPDO();
+$db = (new Database($config["database"]))->getPDO();
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . "/views");
 $twig = new \Twig\Environment($loader);
 $router = new \Bramus\Router\Router();
@@ -57,6 +55,10 @@ $router->get("/logout", function () use ($db, $twig, $userModel) {
 $router->get("/profile", function () use ($db, $twig, $userModel) {
     $controller = new UserController($db, $twig, $userModel);
     $controller->profileGet();
+});
+$router->post("/profile", function () use ($db, $twig, $userModel) {
+    $controller = new UserController($db, $twig, $userModel);
+    $controller->profilePost();
 });
 $router->get("/user/(.*)", function ($username) use ($db, $twig, $userModel) {
     $controller = new UserController($db, $twig, $userModel);

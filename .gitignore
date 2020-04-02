@@ -2,5 +2,5 @@
 /composer.lock
 /vendor
 /uploads
-/config.ini
+/config.php
 /articles.json

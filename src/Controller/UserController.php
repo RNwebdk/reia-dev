@@ -40,6 +40,13 @@ class UserController {
         }
         echo $this->view->render("profile.twig", ["title" => $user["username"] ?? "Profile", "user" => $this->user, "flash" => $flash]);
     }
+    public function profilePost() {
+        $avatarUrl = $_POST["avatar-url"];
+        $this->model->updateAvatar($avatarUrl, $this->user["id"]);
+        set_flash("Updated avatar.", "success");
+        header("Location: /profile");
+        exit();
+    }
     public function adminGet() {
         $flash = get_flash();
         destroy_flash();

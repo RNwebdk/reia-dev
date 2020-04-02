@@ -18,7 +18,9 @@
                     <section class="post-user">
                         <p>
                             <a href="/user/{{ post.username|e }}" class="post-username">{{ post.username|e }}</a>
-                            <img src="/uploads/duckmobile.png" width="64" height="64" alt="avatar" class="post-avatar">
+                            {% if post.avatar %}
+                                <img src="{{ post.avatar|e }}" width="64" height="64" alt="{{ post.username|e }}" class="post-avatar">
+                            {% endif %}
                             {% if post.user_role == 2 %}
                                 <span class="post-role-administrator">Administrator</span>
                             {% endif %}
