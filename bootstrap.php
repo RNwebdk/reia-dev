@@ -5,7 +5,7 @@ if (!file_exists("articles.json")) {
     fclose($fp);
 }
 function get_database_config(): array {
-    $dotenv = new Dotenv\Dotenv();
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 
     if (getenv("APP_ENV") === "development") {
         $dotenv->load(__DIR__);
