@@ -4,8 +4,9 @@ A suite of tools to support roleplaying settings.
 
 ## Features
 
-* User account registration, along with logging in and logging out.
+* User account registration.
 * A built-in wiki.
+* A built-in forum.
 
 ## License
 

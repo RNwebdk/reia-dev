@@ -2,7 +2,8 @@
     "require": {
         "bramus/router": "^1.4",
         "twig/twig": "^3.0",
-        "netcarver/textile": "^3.7"
+        "netcarver/textile": "^3.7",
+        "vlucas/phpdotenv": "^4.1"
     },
     "autoload": {
         "psr-4": {
