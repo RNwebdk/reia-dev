@@ -1,5 +1,5 @@
 # PHP files.
-/composer.lock
+# /composer.lock
 /vendor
 /uploads
 /config.php
