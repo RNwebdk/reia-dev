@@ -8,7 +8,7 @@ function get_database_config(): array {
     $dotenv = new Dotenv\Dotenv();
 
     if (getenv("APP_ENV") === "development") {
-        $dotenv->load(__DIR__)
+        $dotenv->load(__DIR__);
     }
     if (getenv("DATABASE_URL")) {
         $databaseConfig = parse_url(getenv("DATABASE_URL"));
