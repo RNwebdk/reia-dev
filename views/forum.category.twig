@@ -9,7 +9,7 @@
         <p><a href="/forum/create/{{ category.id }}" class="article-button">Create Topic</a></p>
     {% endif %}
     <hr>
-    <h1>Forums - {{ category.name|e }}</h1>
+    <h1>{{ category.name|e }}</h1>
     {% if topics|length > 0 %}
         <article class="topic-overview">
             <section class="topic-section">

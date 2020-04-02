@@ -23,13 +23,18 @@ class ForumModel extends Model {
         return $stmt->fetch();
     }
     public function selectPosts($topicId) {
-        $stmt = $this->db->prepare("SELECT p.id, p.content, p.created_at, p.started_by, p.topic_id, u.id AS user_id, u.username, u.role AS user_role FROM posts p INNER JOIN users u ON p.started_by = u.id WHERE topic_id = ? ORDER BY p.id ASC");
+        $stmt = $this->db->prepare("SELECT p.id, p.content, p.created_at, p.started_by, p.is_modified, p.topic_id, u.id AS user_id, u.username, u.role AS user_role FROM posts p INNER JOIN users u ON p.started_by = u.id WHERE topic_id = ? ORDER BY p.id ASC");
         $stmt->execute([$topicId]);
         return $stmt->fetchAll();
     }
+    public function selectPostById($id) {
+        $stmt = $this->db->prepare("SELECT id, content, started_by, topic_id FROM posts WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
     public function insertPost($content, $createdAt, $startedBy, $topicId) {
-        $stmt = $this->db->prepare("INSERT INTO posts (content, created_at, started_by, topic_id) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$content, $createdAt, $startedBy, $topicId]);
+        $stmt = $this->db->prepare("INSERT INTO posts (content, created_at, started_by, is_modified, topic_id) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$content, $createdAt, $startedBy, 0, $topicId]);
     }
     public function insertTopic($subject, $createdAt, $startedBy, $categoryId) {
         $stmt = $this->db->prepare("INSERT INTO topics (subject, reply_count, created_at, started_by, category_id) VALUES (?, ?, ?, ?, ?) RETURNING id, category_id");
@@ -53,5 +58,10 @@ class ForumModel extends Model {
         $category = $stmt->fetch();
         $stmt = $this->db->prepare("UPDATE categories SET latest_topic = ? WHERE id = ?");
         $stmt->execute([$topicId, $category["id"]]);
+    }
+    public function updatePost($content, $id) {
+        $stmt = $this->db->prepare("UPDATE posts SET content = ?, is_modified = ? WHERE id = ? RETURNING topic_id");
+        $stmt->execute([$content, 1, $id]);
+        return $stmt->fetch();
     }
 }

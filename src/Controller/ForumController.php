@@ -122,6 +122,8 @@ class ForumController {
         }
         if (empty($content)) {
             $error .= "Please enter content to post.<br>";
+        } elseif (strlen($content) > 4096) {
+            $error .= "Content cannot be longer than 4096 characters.";
         }
         if (!empty($error)) {
             set_flash($error, "error");
@@ -143,6 +145,59 @@ class ForumController {
                 header("Location: /forum/create/" . $categoryId);
                 exit();
             }
+        }
+    }
+    public function updateGet($postId) {
+        $flash = get_flash();
+        $formInput = get_form_input();
+        $csrfToken = get_csrf_token();
+        destroy_flash();
+        destroy_form_input();
+        $userId = $_SESSION["user-id"] ?? null;
+
+        if (!$userId || !$_SESSION["is-authenticated"]) {
+            set_flash("Please login to view this page.", "error");
+            header("Location: /forum");
+            exit();
+        }
+        $post = $this->model->selectPostById($postId);
+
+        if ($post) {
+            if ($post["started_by"] !== $this->user["id"]) {
+                set_flash("You don't have permission to edit this post.", "error");
+                header("Location: /forum/topic/" . $post["topic_id"]);
+                exit();
+            }
+        } else {
+            set_flash("Cannot locate post.", "error");
+            header("Location: /forum");
+            exit();
+        }
+        echo $this->view->render("forum.update.twig", ["title" => "Update Post", "post" => $post, "user" => $this->user, "flash" => $flash, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+    }
+    public function updatePost($postId) {
+        $csrfToken = $_POST["csrf-token"];
+        $content = $_POST["content"];
+        $error = "";
+
+        if (!hash_equals($csrfToken, get_csrf_token())) {
+            $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
+        }
+        if (empty($content)) {
+            $error .= "Please enter content to post.<br>";
+        } elseif (strlen($content) > 4096) {
+            $error .= "Content cannot be longer than 4096 characters.";
+        }
+        if (!empty($error)) {
+            set_flash($error, "error");
+            set_form_input(["content" => $content]);
+            header("Location: /forum/update/" . $postId);
+            exit();
+        } else {
+            $post = $this->model->updatePost($content, $postId, );
+            set_flash("Post updated successfully!", "success");
+            header("Location: /forum/topic/" . $post["topic_id"]);
+            exit();
         }
     }
 }

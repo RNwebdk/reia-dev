@@ -154,6 +154,14 @@ $router->post("/forum/create/(\d+)", function ($id) use ($db, $twig, $userModel)
     $controller = new ForumController($db, $twig, $userModel);
     $controller->createPost($id);
 });
+$router->get("/forum/update/(\d+)", function ($id) use ($db, $twig, $userModel) {
+    $controller = new ForumController($db, $twig, $userModel);
+    $controller->updateGet($id);
+});
+$router->post("/forum/update/(\d+)", function ($id) use ($db, $twig, $userModel) {
+    $controller = new ForumController($db, $twig, $userModel);
+    $controller->updatePost($id);
+});
 $router->set404(function () use ($db, $twig) {
     header("HTTP/1.1 404 Not Found");
     echo $twig->render("404.twig", ["title" => "404 Not Found"]);

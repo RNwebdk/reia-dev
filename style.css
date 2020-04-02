@@ -287,6 +287,9 @@ input, button {
 .topic-last-reply {
     display: table-cell;
 }
+.post-update {
+    float: right;
+}
 @media (min-width: 320px) and (max-width: 480px) {
     table.infobox {
         display: block;
