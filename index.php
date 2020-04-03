@@ -2,7 +2,7 @@
 session_start();
 date_default_timezone_set("America/Chicago");
 
-require_once __DIR__ . "/../vendor/autoload.php";
+require_once __DIR__ . "/vendor/autoload.php";
 require_once __DIR__ . "/bootstrap.php";
 
 use ReiaDev\Database;
@@ -18,7 +18,7 @@ if (!get_csrf_token()) {
     create_csrf_token();
 }
 $db = (new Database(get_database_config()))->getPDO();
-$loader = new \Twig\Loader\FilesystemLoader(__DIR__ . "/../views");
+$loader = new \Twig\Loader\FilesystemLoader(__DIR__ . "/views");
 $twig = new \Twig\Environment($loader);
 $router = new \Bramus\Router\Router();
 $userModel = new UserModel($db);
