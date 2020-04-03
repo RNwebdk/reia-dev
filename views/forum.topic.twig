@@ -4,9 +4,18 @@
     {% if flash %}
         <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
     {% endif %}
-    <p><a href="/forum">Forum</a> / <a href="/forum/{{ topic.category_id }}">{{ topic.category_name|e }}</a> / <a href="/forum/topic/{{ topic.id }}">{{ topic.subject|e }}</a></p>
+    <p><a href="/forum">Forum</a> / <a href="/forum/{{ topic.category_id }}">{{ topic.category_name|e }}</a> / <a href="/forum/topic/{{ topic.id }}">{{ topic.is_locked ? "Locked: " : "" }}{{ topic.subject|e }}</a></p>
     <hr>
-    <h1>{{ topic.subject|e }}</h1>
+    <h1>
+        {{ topic.is_locked ? "Locked: " : "" }}{{ topic.subject|e }} 
+        {% if user.role == 2 %}
+            {% if not topic.is_locked %}
+                (<a href="/forum/topic/lock/{{ topic.id }}">Lock Topic</a>)
+            {% else %}
+                (<a href="/forum/topic/unlock/{{ topic.id }}">Unlock Topic</a>)
+            {% endif %}
+        {% endif %}
+    </h1>
     {% if posts|length > 0 %}
         {% for post in posts %}
             <article class="topic-post">
@@ -35,7 +44,7 @@
     {% else %}
         <p>No posts found.</p>
     {% endif %}
-    {% if user %}
+    {% if user and not topic.is_locked %}
         <form action="/forum/topic/{{ topic.id }}" method="post" class="topic-reply">
             <caption><strong>Reply</strong></caption>
             <input type="hidden" name="csrf-token" value="{{ csrf_token }}">

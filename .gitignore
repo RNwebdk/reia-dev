@@ -1,5 +1,7 @@
-# PHP files.
+# PHP files and directories.
 .env
-/vendor
-/uploads
-/articles.json
+vendor/
+
+# Application generated files and directories.
+uploads/
+articles.json

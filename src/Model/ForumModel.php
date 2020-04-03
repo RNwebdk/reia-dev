@@ -3,7 +3,7 @@ namespace ReiaDev\Model;
 
 class ForumModel extends Model {
     public function selectCategories() {
-        $stmt = $this->db->prepare("SELECT c.id, c.name, c.description, c.latest_topic, t.id AS topic_id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, u.id AS user_id, u.username  FROM categories c LEFT JOIN topics t ON c.latest_topic = t.id LEFT JOIN users u ON COALESCE(t.last_reply, t.started_by) = u.id ORDER BY c.id ASC");
+        $stmt = $this->db->prepare("SELECT c.id, c.name, c.description, c.latest_topic, t.id AS topic_id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.is_locked, t.category_id, u.id AS user_id, u.username  FROM categories c LEFT JOIN topics t ON c.latest_topic = t.id LEFT JOIN users u ON COALESCE(t.last_reply, t.started_by) = u.id ORDER BY c.id ASC");
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -13,12 +13,12 @@ class ForumModel extends Model {
         return $stmt->fetch();
     }
     public function selectTopics($categoryId) {
-        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, u.id AS user_id, u.username, lr.id AS last_reply_id, lr.username AS last_reply_username FROM topics t LEFT JOIN users u ON t.started_by = u.id LEFT JOIN users lr ON t.last_reply = lr.id WHERE category_id = ? ORDER BY COALESCE(t.last_replied_at, t.created_at) DESC");
+        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.is_locked, t.category_id, u.id AS user_id, u.username, lr.id AS last_reply_id, lr.username AS last_reply_username FROM topics t LEFT JOIN users u ON t.started_by = u.id LEFT JOIN users lr ON t.last_reply = lr.id WHERE category_id = ? ORDER BY COALESCE(t.last_replied_at, t.created_at) DESC");
         $stmt->execute([$categoryId]);
         return $stmt->fetchAll();
     }
     public function selectTopicById($id) {
-        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.category_id, c.name AS category_name FROM topics t INNER JOIN categories c ON t.category_id = c.id WHERE t.id = ?");
+        $stmt = $this->db->prepare("SELECT t.id, t.subject, t.reply_count, t.created_at, t.started_by, t.last_reply, t.last_replied_at, t.is_locked, t.category_id, c.name AS category_name FROM topics t INNER JOIN categories c ON t.category_id = c.id WHERE t.id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
@@ -63,5 +63,9 @@ class ForumModel extends Model {
         $stmt = $this->db->prepare("UPDATE posts SET content = ?, is_modified = ? WHERE id = ? RETURNING topic_id");
         $stmt->execute([$content, 1, $id]);
         return $stmt->fetch();
+    }
+    public function updateTopicLocked($status, $id) {
+        $stmt = $this->db->prepare("UPDATE topics SET is_locked = ? WHERE id = ?");
+        $stmt->execute([$status, $id]);
     }
 }

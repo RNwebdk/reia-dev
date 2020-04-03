@@ -83,6 +83,12 @@ class ForumController {
             exit();
         } else {
             $topic = $this->model->selectTopicById($topicId);
+
+            if ($topic["is_locked"]) {
+                set_flash("This topic is locked. No replies can be made.", "error");
+                header("Location: /forum/topic" . $topicId);
+                exit();
+            }
             $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user["id"], $topicId);
             $this->model->updateTopic($this->user["id"], date("Y-m-d H:i:s"), $topicId);
             $this->model->updateLatestTopic($topic["category_id"], $topicId);
@@ -199,5 +205,43 @@ class ForumController {
             header("Location: /forum/topic/" . $post["topic_id"]);
             exit();
         }
+    }
+    public function lockTopic($id) {
+        $userId = $_SESSION["user-id"] ?? null;
+
+        if (!$userId || !$_SESSION["is-authenticated"]) {
+            set_flash("Please login to view this page.", "error");
+            header("Location: /login");
+            exit();
+        }
+        if (!$_SESSION["is-administrator"]) {
+            set_flash("You're not authorized to do that.", "error");
+            header("Location: /forum/topic/" . $id);
+            exit();
+        }
+        $this->model->updateTopicLocked(1, $id);
+
+        set_flash("Locked topic.", "success");
+        header("Location: /forum/topic/" . $id);
+        exit();
+    }
+    public function unlockTopic($id) {
+        $userId = $_SESSION["user-id"] ?? null;
+
+        if (!$userId || !$_SESSION["is-authenticated"]) {
+            set_flash("Please login to view this page.", "error");
+            header("Location: /login");
+            exit();
+        }
+        if (!$_SESSION["is-administrator"]) {
+            set_flash("You're not authorized to do that.", "error");
+            header("Location: /forum/topic/" . $id);
+            exit();
+        }
+        $this->model->updateTopicLocked(0, $id);
+
+        set_flash("Unlocked topic.", "success");
+        header("Location: /forum/topic/" . $id);
+        exit();
     }
 }
