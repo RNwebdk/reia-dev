@@ -295,6 +295,9 @@ input, button {
     font-style: italic;
     margin: 0;
 }
+.admin-table {
+    width: 40em;
+}
 @media (min-width: 320px) and (max-width: 480px) {
     table.infobox {
         display: block;
@@ -330,5 +333,8 @@ input, button {
     .post-update {
         float: none;
         display: block;
+    }
+    .admin-table {
+        width: 100%;
     }
 }

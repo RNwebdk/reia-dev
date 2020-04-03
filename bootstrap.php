@@ -15,14 +15,12 @@ function get_database_config(): array {
             "db_user" => getenv("DB_USER"),
             "db_pass" => getenv("DB_PASS")
         ];
-    } elseif (getenv("DATABASE_URL")) {
-        $databaseConfig = parse_url(getenv("DATABASE_URL"));
-
+    } elseif (getenv("APP_ENV") === "production") {
         $config["database"] = [
-            "db_host" => $databaseConfig["host"],
-            "db_name" => ltrim($databaseConfig["path"], "/"),
-            "db_user" => $databaseConfig["user"],
-            "db_pass" => $databaseConfig["pass"]
+            "db_host" => getenv("DB_HOST"),
+            "db_name" => getenv("DB_NAME"),
+            "db_user" => getenv("DB_USER"),
+            "db_pass" => getenv("DB_PASS")
         ];
     }
     $config["database"]["db_options"] = [
