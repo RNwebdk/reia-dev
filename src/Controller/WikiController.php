@@ -163,10 +163,10 @@ class WikiController {
     }
     public function uploadPost() {
         $csrfToken = $_POST["csrf-token"];
-        $targetDir = __DIR__ . "/uploads/";
+        $targetDir = $_SERVER["DOCUMENT_ROOT"] . "/uploads/";
 
         if (!file_exists($targetDir)) {
-            mkdir($targetDir, 0777);
+            mkdir($targetDir, 0777, true);
         }
         if ($_FILES["upload"]["error"] === 4) {
             set_flash("No file uploaded.", "error");
