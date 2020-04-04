@@ -24,8 +24,8 @@ class WikiModel extends Model {
     }
     public function search($term) {
         $stmt = $this->db->prepare("SELECT title, slug, last_modified, modified_by FROM articles WHERE title ILIKE ? OR body ILIKE ?");
-        $stmt->bindValue(1, "%" . $term . "%", PDO::PARAM_STR);
-        $stmt->bindValue(2, "%" . $term . "%", PDO::PARAM_STR);
+        $stmt->bindValue(1, "%" . $term . "%", \PDO::PARAM_STR);
+        $stmt->bindValue(2, "%" . $term . "%", \PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll();
     }

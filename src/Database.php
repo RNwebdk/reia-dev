@@ -9,8 +9,8 @@ class Database {
 
         try {
             $this->pdo = new \PDO($dsn, $config["db_user"], $config["db_pass"], $config["db_options"]);
-        } catch (PDOException $e) {
-            throw new PDOException($e->getMessage(), (int) $e->getCode());
+        } catch (\PDOException $e) {
+            throw new \PDOException($e->getMessage(), (int) $e->getCode());
         }
     }
     public function getPDO(): \PDO {
