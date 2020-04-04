@@ -17,7 +17,7 @@
             {% for article in articles %}
                 <article class="search-result">
                     <h2><a href="/wiki/article/{{ article.slug|e }}">{{ article.title|e }}</a></h2>
-                    <p class="article-byline"><em>Last modified at {{ article.last_modified|date("Y-m-d H:i:s") }} by <a href="/user/{{ article.modified_by|e }}">{{ article.modified_by|e }}</a>.</em></p>
+                    <p class="article-byline"><em>Last modified at {{ article.last_modified|date("Y-m-d H:i:s") }} by <a href="/user/{{ article.username|e }}">{{ article.username|e }}</a>.</em></p>
                 </article>
             {% endfor %}
         {% else %}

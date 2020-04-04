@@ -23,7 +23,7 @@ class WikiModel extends Model {
         $this->generateJSON();
     }
     public function search($term) {
-        $stmt = $this->db->prepare("SELECT title, slug, last_modified, modified_by FROM articles WHERE title ILIKE ? OR body ILIKE ?");
+        $stmt = $this->db->prepare("SELECT a.title, a.slug, a.last_modified, a.modified_by, u.id as user_id, u.username FROM articles a INNER JOIN users u ON a.modified_by = u.id WHERE title ILIKE ? OR body ILIKE ?");
         $stmt->bindValue(1, "%" . $term . "%", \PDO::PARAM_STR);
         $stmt->bindValue(2, "%" . $term . "%", \PDO::PARAM_STR);
         $stmt->execute();
