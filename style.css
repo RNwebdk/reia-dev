@@ -127,6 +127,8 @@ hr {
 }
 article.search-result {
     padding: 0;
+    border: 1px solid #cccccc;
+    background-color: #f8f8f8;
 }
 .search-result h2 {
     margin: 0.5em;
