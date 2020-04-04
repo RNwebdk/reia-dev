@@ -3,7 +3,7 @@ namespace ReiaDev\Model;
 
 class LoginModel extends Model {
     public function verify($username, $password) {
-        $stmt = $this->db->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
+        $stmt = $this->db->prepare("SELECT id, username, password, role FROM users WHERE username ILIKE ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
 

@@ -3,7 +3,7 @@ namespace ReiaDev\Model;
 
 class RegisterModel extends Model {
     public function selectByUsernameOrEmail($username, $email) {
-        $stmt = $this->db->prepare("SELECT id, username, password, email FROM users WHERE username = ? OR email = ?");
+        $stmt = $this->db->prepare("SELECT id, username, password, email FROM users WHERE username ILIKE ? OR email = ?");
         $stmt->execute([$username, $email]);
         return $stmt->fetch();
     }

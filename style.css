@@ -287,8 +287,14 @@ input, button {
 .topic-last-reply {
     display: table-cell;
 }
-.post-update {
+.post-options {
     float: right;
+}
+.post-options a:not(:last-child) {
+    padding-right: 0.5em;
+}
+.post-quote {
+    cursor: pointer;
 }
 .form-info {
     font-size: 90%;
@@ -297,6 +303,10 @@ input, button {
 }
 .admin-table {
     width: 40em;
+}
+blockquote {
+    border: 1px solid #cccccc;
+    background-color: #f8f8f8;
 }
 @media (min-width: 320px) and (max-width: 480px) {
     table.infobox {

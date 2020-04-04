@@ -20,7 +20,9 @@
         {% for post in posts %}
             <article class="topic-post">
                 <section class="post-info">
-                    <p>#{{ post.id }}<span class="post-date">{{ post.created_at|date("Y-m-d H:i:s") }} {{ post.is_modified ? "(modified)" : "" }}</span> <a href="/forum/update/{{ post.id }}" class="post-update">Update</a></p>
+                    <p>
+                        #{{ post.id }}<span class="post-date">{{ post.created_at|date("Y-m-d H:i:s") }} {{ post.is_modified ? "(modified)" : "" }}</span>
+                        <span class="post-options"><!-- <a class="post-quote">Quote</a> --> {% if post.started_by == user.id %}<a href="/forum/update/{{ post.id }}">Update</a>{% endif %}</p>
                     <span class="clear"></span>
                 </section>
                 <section class="post-body">
@@ -49,7 +51,7 @@
             <caption><strong>Reply</strong></caption>
             <input type="hidden" name="csrf-token" value="{{ csrf_token }}">
             <div>
-                <textarea name="content" rows="20" cols="80">{{ form_input ? form_input.content|e : "" }}</textarea>
+                <textarea name="content" rows="20" cols="80" class="reply-content">{{ form_input ? form_input.content|e : "" }}</textarea>
             </div>
             <div>
                 <button type="submit">Post</button>

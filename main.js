@@ -6,7 +6,7 @@ async function getArticles() {
     });
     return response.json();
 }
-async function checkLinks() {
+async function checkLinksWiki() {
     let response = await getArticles().then((response) => {
         let articleBody = document.querySelector(".article-body");
 
@@ -33,8 +33,62 @@ async function checkLinks() {
         }
     });
 }
-checkLinks();
+async function checkLinksForum() {
+    let response = await getArticles().then((response) => {
+        let topicPosts = document.querySelectorAll(".topic-post");
 
+        if (topicPosts) {
+            let posts = document.querySelectorAll(".topic-post");
+            Array.from(posts).forEach((post) => {
+                let links = post.getElementsByTagName("a");
+                let responseArray = Object.values(response);
+            
+                Array.from(links).forEach((link) => {
+                    let validUrl = /\/wiki\/article\/([a-z0-9_-]+)/;
+                    let href = link.href;
+                    let match = href.match(validUrl);
+            
+                    if (match) {
+                        let articleExists = false;
+        
+                        if (responseArray.indexOf(match[1]) !== -1) {
+                            articleExists = true;
+                        }
+                        if (!articleExists) {
+                            link.classList.add("invalid-link");
+                        }
+                    }
+                });
+            });
+        }
+    });
+}
+checkLinksWiki();
+checkLinksForum();
+/*
+function generateQuoteButtons() {
+    let topicPosts = document.querySelectorAll(".topic-post");
+    let replyContent = document.querySelector(".reply-content");
+
+    topicPosts.forEach((post) => {
+        let quoteButton = post.querySelector(".post-quote");
+        let username = post.querySelector(".post-username").innerText;
+        let content = post.querySelector(".post-content").innerText;
+
+        console.log(post);
+        console.log(quoteButton);
+        console.log(username);
+        console.log(content);
+
+        quoteButton.addEventListener("click", () => {
+            let str = `*${username} wrote*: <br>
+            bq. ${content}<br>`;
+            replyContent.innerText = str;
+        }, false);
+    });
+}
+generateQuoteButtons();
+*/
 let images = document.querySelectorAll(".double");
 
 images.forEach((image) => {
