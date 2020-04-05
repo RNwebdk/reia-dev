@@ -79,97 +79,101 @@ $router->get("/admin/promote/(\d+)", function ($id) use ($db, $twig, $userModel)
     $controller = new UserController($db, $twig, $userModel);
     $controller->promoteGet($id);
 });
-$router->get("/wiki", function () use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->indexGet();
+$router->mount("/wiki", function () use ($router, $db, $twig, $userModel) {
+    $router->get("/", function () use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->indexGet();
+    });
+    $router->get("/article/([a-z0-9_-]+)", function ($getSlug) use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->articleGet($getSlug);
+    });
+    $router->get("/create", function () use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->createGet();
+    });
+    $router->get("/create/([a-z0-9_-]+)", function ($getSlug) use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->createGet($getSlug);
+    });
+    $router->post("/create", function () use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->createPost();
+    });
+    $router->post("/create/([a-z0-9_-]+)", function ($getSlug) use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->createPost($getSlug);
+    });
+    $router->get("/update/([a-z0-9_-]+)", function ($getSlug) use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->updateGet($getSlug);
+    });
+    $router->post("/update/([a-z0-9_-]+)", function ($getSlug) use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->updatePost($getSlug);
+    });
+    $router->get("/search", function () use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->searchGet();
+    });
+    $router->get("/search/(.*)", function ($searchTerm) use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->searchGet($searchTerm);
+    });
+    $router->post("/search", function () use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->searchPost();
+    });
+    $router->get("/upload", function () use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->uploadGet();
+    });
+    $router->post("/upload", function () use ($db, $twig, $userModel) {
+        $controller = new WikiController($db, $twig, $userModel);
+        $controller->uploadPost();
+    });
 });
-$router->get("/wiki/article/([a-z0-9_-]+)", function ($getSlug) use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->articleGet($getSlug);
-});
-$router->get("/wiki/create", function () use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->createGet();
-});
-$router->get("/wiki/create/([a-z0-9_-]+)", function ($getSlug) use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->createGet($getSlug);
-});
-$router->post("/wiki/create", function () use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->createPost();
-});
-$router->post("/wiki/create/([a-z0-9_-]+)", function ($getSlug) use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->createPost($getSlug);
-});
-$router->get("/wiki/update/([a-z0-9_-]+)", function ($getSlug) use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->updateGet($getSlug);
-});
-$router->post("/wiki/update/([a-z0-9_-]+)", function ($getSlug) use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->updatePost($getSlug);
-});
-$router->get("/wiki/search", function () use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->searchGet();
-});
-$router->get("/wiki/search/(.*)", function ($searchTerm) use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->searchGet($searchTerm);
-});
-$router->post("/wiki/search", function () use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->searchPost();
-});
-$router->get("/wiki/upload", function () use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->uploadGet();
-});
-$router->post("/wiki/upload", function () use ($db, $twig, $userModel) {
-    $controller = new WikiController($db, $twig, $userModel);
-    $controller->uploadPost();
-});
-$router->get("/forum", function () use ($db, $twig, $userModel) {
-    $controller = new ForumController($db, $twig, $userModel);
-    $controller->indexGet();
-});
-$router->get("/forum/(\d+)", function ($id) use ($db, $twig, $userModel) {
-    $controller = new ForumController($db, $twig, $userModel);
-    $controller->categoryGet($id);
-});
-$router->get("/forum/topic/(\d+)", function ($id) use ($db, $twig, $userModel) {
-    $controller = new ForumController($db, $twig, $userModel);
-    $controller->topicGet($id);
-});
-$router->post("/forum/topic/(\d+)", function ($id) use ($db, $twig, $userModel) {
-    $controller = new ForumController($db, $twig, $userModel);
-    $controller->topicPost($id);
-});
-$router->get("/forum/create/(\d+)", function ($id) use ($db, $twig, $userModel) {
-    $controller = new ForumController($db, $twig, $userModel);
-    $controller->createGet($id);
-});
-$router->post("/forum/create/(\d+)", function ($id) use ($db, $twig, $userModel) {
-    $controller = new ForumController($db, $twig, $userModel);
-    $controller->createPost($id);
-});
-$router->get("/forum/update/(\d+)", function ($id) use ($db, $twig, $userModel) {
-    $controller = new ForumController($db, $twig, $userModel);
-    $controller->updateGet($id);
-});
-$router->post("/forum/update/(\d+)", function ($id) use ($db, $twig, $userModel) {
-    $controller = new ForumController($db, $twig, $userModel);
-    $controller->updatePost($id);
-});
-$router->get("/forum/topic/lock/(\d+)", function ($id) use ($db, $twig, $userModel) {
-    $controller = new ForumController($db, $twig, $userModel);
-    $controller->lockTopic($id);
-});
-$router->get("/forum/topic/unlock/(\d+)", function ($id) use ($db, $twig, $userModel) {
-    $controller = new ForumController($db, $twig, $userModel);
-    $controller->unlockTopic($id);
+$router->mount("/forum", function () use ($router, $db, $twig, $userModel) {
+    $router->get("/", function () use ($db, $twig, $userModel) {
+        $controller = new ForumController($db, $twig, $userModel);
+        $controller->indexGet();
+    });
+    $router->get("/(\d+)", function ($id) use ($db, $twig, $userModel) {
+        $controller = new ForumController($db, $twig, $userModel);
+        $controller->categoryGet($id);
+    });
+    $router->get("/topic/(\d+)", function ($id) use ($db, $twig, $userModel) {
+        $controller = new ForumController($db, $twig, $userModel);
+        $controller->topicGet($id);
+    });
+    $router->post("/topic/(\d+)", function ($id) use ($db, $twig, $userModel) {
+        $controller = new ForumController($db, $twig, $userModel);
+        $controller->topicPost($id);
+    });
+    $router->get("/create/(\d+)", function ($id) use ($db, $twig, $userModel) {
+        $controller = new ForumController($db, $twig, $userModel);
+        $controller->createGet($id);
+    });
+    $router->post("/create/(\d+)", function ($id) use ($db, $twig, $userModel) {
+        $controller = new ForumController($db, $twig, $userModel);
+        $controller->createPost($id);
+    });
+    $router->get("/update/(\d+)", function ($id) use ($db, $twig, $userModel) {
+        $controller = new ForumController($db, $twig, $userModel);
+        $controller->updateGet($id);
+    });
+    $router->post("/update/(\d+)", function ($id) use ($db, $twig, $userModel) {
+        $controller = new ForumController($db, $twig, $userModel);
+        $controller->updatePost($id);
+    });
+    $router->get("/topic/lock/(\d+)", function ($id) use ($db, $twig, $userModel) {
+        $controller = new ForumController($db, $twig, $userModel);
+        $controller->lockTopic($id);
+    });
+    $router->get("/topic/unlock/(\d+)", function ($id) use ($db, $twig, $userModel) {
+        $controller = new ForumController($db, $twig, $userModel);
+        $controller->unlockTopic($id);
+    });
 });
 $router->set404(function () use ($db, $twig) {
     header("HTTP/1.1 404 Not Found");
