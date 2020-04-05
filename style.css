@@ -310,6 +310,10 @@ blockquote {
     border: 1px solid #cccccc;
     background-color: #f8f8f8;
 }
+.article-body h2:not(#toc) {
+    border-bottom: 1px solid #bbbbbb;
+    overflow: hidden;
+}
 @media (min-width: 320px) and (max-width: 480px) {
     table.infobox {
         display: block;
