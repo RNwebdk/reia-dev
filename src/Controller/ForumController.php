@@ -9,9 +9,9 @@ class ForumController {
     private $view;
     private $user;
 
-    public function __construct($db, $view, $userModel) {
+    public function __construct($model, $view, $userModel) {
         $this->userModel = $userModel;
-        $this->model = new ForumModel($db);
+        $this->model = $model;
         $this->view = $view;
 
         if (!empty($_SESSION["user-id"]) || !empty($_SESSION["is-authenticated"])) {

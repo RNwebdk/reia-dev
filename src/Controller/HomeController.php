@@ -8,12 +8,12 @@ class HomeController {
     private $view;
     private $user;
 
-    public function __construct($db, $view, $userModel) {
-        $this->model = new UserModel($db);
+    public function __construct($model, $view) {
+        $this->model = $model;
         $this->view = $view;
 
         if (!empty($_SESSION["user-id"]) || !empty($_SESSION["is-authenticated"])) {
-            $this->user = $userModel->selectById($_SESSION["user-id"]);
+            $this->user = $this->model->selectById($_SESSION["user-id"]);
         }
     }
     public function indexGet() {

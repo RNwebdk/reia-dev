@@ -8,8 +8,8 @@ class WikiController {
     private $view;
     private $user;
 
-    public function __construct($db, $view, $userModel) {
-        $this->model = new WikiModel($db);
+    public function __construct($model, $view, $userModel) {
+        $this->model = $model;
         $this->view = $view;
 
         if (!empty($_SESSION["user-id"]) || !empty($_SESSION["is-authenticated"])) {
