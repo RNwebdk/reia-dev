@@ -117,6 +117,12 @@ $router->mount("/forum", function () use ($router, $container) {
     $router->get("/topic/unlock/(\d+)", function ($id) use ($container) {
         return $container["forumController"]->unlockTopic($id);
     });
+    $router->get("/topic/sticky/(\d+)", function ($id) use ($container) {
+        return $container["forumController"]->stickyTopic($id);
+    });
+    $router->get("/topic/unsticky/(\d+)", function ($id) use ($container) {
+        return $container["forumController"]->unstickyTopic($id);
+    });
 });
 $router->set404(function () use ($container) {
     header("HTTP/1.1 404 Not Found");

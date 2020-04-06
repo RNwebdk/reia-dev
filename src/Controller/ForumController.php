@@ -244,4 +244,42 @@ class ForumController {
         header("Location: /forum/topic/" . $id);
         exit();
     }
+    public function stickyTopic($id) {
+        $userId = $_SESSION["user-id"] ?? null;
+
+        if (!$userId || !$_SESSION["is-authenticated"]) {
+            set_flash("Please login to view this page.", "error");
+            header("Location: /login");
+            exit();
+        }
+        if (!$_SESSION["is-administrator"]) {
+            set_flash("You're not authorized to do that.", "error");
+            header("Location: /forum/topic/" . $id);
+            exit();
+        }
+        $this->model->updateTopicStickied(1, $id);
+
+        set_flash("Stuck topic.", "success");
+        header("Location: /forum/topic/" . $id);
+        exit();
+    }
+    public function unstickyTopic($id) {
+        $userId = $_SESSION["user-id"] ?? null;
+
+        if (!$userId || !$_SESSION["is-authenticated"]) {
+            set_flash("Please login to view this page.", "error");
+            header("Location: /login");
+            exit();
+        }
+        if (!$_SESSION["is-administrator"]) {
+            set_flash("You're not authorized to do that.", "error");
+            header("Location: /forum/topic/" . $id);
+            exit();
+        }
+        $this->model->updateTopicStickied(0, $id);
+
+        set_flash("Unstuck topic.", "success");
+        header("Location: /forum/topic/" . $id);
+        exit();
+    }
 }

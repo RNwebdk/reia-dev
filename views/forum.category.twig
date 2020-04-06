@@ -20,7 +20,7 @@
             </section>
         {% for topic in topics %}
             <section class="topic-section">
-                <p class="topic-subject"><a href="/forum/topic/{{ topic.id }}">{{ topic.is_locked ? "Locked: " : "" }}{{ topic.subject|e }}</a></p>
+                <p class="topic-subject"><a href="/forum/topic/{{ topic.id }}">{{ topic.is_sticky ? "Sticky: " : "" }}{{ topic.is_locked ? "Locked: " : "" }}{{ topic.subject|e }}</a></p>
                 <p class="topic-replies">{{ topic.reply_count }}</p>
                 <p class="topic-started-by"><a href="/user/{{ topic.username|e }}">{{ topic.username|e }}</a> ({{ topic.created_at|date("Y-m-d H:i:s") }})</p>
                 {% if topic.last_reply_username %}

@@ -197,18 +197,21 @@ input, button {
 }
 .post-body {
     display: table;
+    width: 100%;
 }
 .post-user {
     padding: 1em;
-    width: 12em;
+    width: 15%;
     text-align: center;
     background-color: #f8f8f8;
     border-right: 1px solid #cccccc;
     vertical-align: top;
     display: table-cell;
+    text-overflow: clip;
 }
 .post-content {
     padding: 1em;
+    width: 85%;
     display: table-cell;
 }
 .post-date {
@@ -251,6 +254,7 @@ input, button {
 }
 .category-foot {
     display: table-cell;
+    width: 40%;
 }
 .category-description {
     display: block;
@@ -276,18 +280,22 @@ input, button {
 .topic-subject {
     display: table-cell;
     border-right: 1px solid #cccccc;
+    width: 45%;
 }
 .topic-replies {
     display: table-cell;
     border-right: 1px solid #cccccc;
     text-align: center;
+    width: 5%;
 }
 .topic-started-by {
     display: table-cell;
     border-right: 1px solid #cccccc;
+    width: 25%;
 }
 .topic-last-reply {
     display: table-cell;
+    width: 25%;
 }
 .post-options {
     float: right;
@@ -339,6 +347,17 @@ blockquote {
     font-size: 90%;
     margin-top: 0.5em;
 }
+.topic-options {
+    margin-top: 0;
+}
+@media (min-width: 481px) and (max-width: 768px) {
+    .post-user {
+        width: 25%;
+    }
+    .post-content {
+        width: 75%;
+    }
+}
 @media (min-width: 320px) and (max-width: 480px) {
     table.infobox {
         display: block;
@@ -371,11 +390,14 @@ blockquote {
     .category-description {
         display: none;
     }
-    .post-update {
+    .post-options {
         float: none;
         display: block;
     }
     .admin-table {
         width: 100%;
+    }
+    .search-container {
+        max-width: 100%;
     }
 }

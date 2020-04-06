@@ -4,18 +4,26 @@
     {% if flash %}
         <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
     {% endif %}
-    <p><a href="/forum">Forum</a> / <a href="/forum/{{ topic.category_id }}">{{ topic.category_name|e }}</a> / <a href="/forum/topic/{{ topic.id }}">{{ topic.is_locked ? "Locked: " : "" }}{{ topic.subject|e }}</a></p>
+    <p><a href="/forum">Forum</a> / <a href="/forum/{{ topic.category_id }}">{{ topic.category_name|e }}</a> / <a href="/forum/topic/{{ topic.id }}">{{ topic.is_sticky ? "Sticky: " : "" }}{{ topic.is_locked ? "Locked: " : "" }}{{ topic.subject|e }}</a></p>
     <hr>
     <h1>
-        {{ topic.is_locked ? "Locked: " : "" }}{{ topic.subject|e }} 
+        {{ topic.is_sticky ? "Sticky: " : "" }}{{ topic.is_locked ? "Locked: " : "" }}{{ topic.subject|e }} 
+    </h1>
+    <p class="topic-options">
         {% if user.role == 2 %}
             {% if not topic.is_locked %}
-                (<a href="/forum/topic/lock/{{ topic.id }}">Lock Topic</a>)
+                <a href="/forum/topic/lock/{{ topic.id }}">Lock Topic</a>
             {% else %}
-                (<a href="/forum/topic/unlock/{{ topic.id }}">Unlock Topic</a>)
+                <a href="/forum/topic/unlock/{{ topic.id }}">Unlock Topic</a>
+            {% endif %}
+            |
+            {% if not topic.is_sticky %}
+                <a href="/forum/topic/sticky/{{ topic.id }}">Sticky Topic</a>
+            {% else %}
+                <a href="/forum/topic/unsticky/{{ topic.id }}">Unsticky Topic</a>
             {% endif %}
         {% endif %}
-    </h1>
+    </p>
     {% if posts|length > 0 %}
         {% for post in posts %}
             <article class="topic-post">
