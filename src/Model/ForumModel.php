@@ -37,8 +37,8 @@ class ForumModel extends Model {
         $stmt->execute([$content, $createdAt, $startedBy, 0, $topicId]);
     }
     public function insertTopic($subject, $createdAt, $startedBy, $categoryId) {
-        $stmt = $this->db->prepare("INSERT INTO topics (subject, reply_count, created_at, started_by, category_id) VALUES (?, ?, ?, ?, ?) RETURNING id, category_id");
-        $stmt->execute([$subject, 0, $createdAt, $startedBy, $categoryId]);
+        $stmt = $this->db->prepare("INSERT INTO topics (subject, reply_count, created_at, started_by, is_locked, is_sticky, category_id) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id, category_id");
+        $stmt->execute([$subject, 0, $createdAt, $startedBy, 0, 0, $categoryId]);
         return $stmt->fetch();
     }
     public function updateTopic($lastReply, $lastRepliedAt, $id) {
