@@ -56,7 +56,7 @@ $router->mount("/wiki", function () use ($router, $container) {
         return $container["wikiController"]->createGet();
     });
     $router->get("/create/([a-z0-9_-]+)", function ($getSlug) use ($container) {
-        return $container["wikiController"]->createGet($slug);
+        return $container["wikiController"]->createGet($getSlug);
     });
     $router->post("/create", function () use ($container) {
         return $container["wikiController"]->createPost();
