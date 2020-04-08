@@ -33,8 +33,9 @@ class ForumModel extends Model {
         return $stmt->fetch();
     }
     public function insertPost($content, $createdAt, $startedBy, $topicId) {
-        $stmt = $this->db->prepare("INSERT INTO posts (content, created_at, started_by, is_modified, topic_id) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $this->db->prepare("INSERT INTO posts (content, created_at, started_by, is_modified, topic_id) VALUES (?, ?, ?, ?, ?) RETURNING id");
         $stmt->execute([$content, $createdAt, $startedBy, 0, $topicId]);
+        return $stmt->fetch();
     }
     public function insertTopic($subject, $createdAt, $startedBy, $categoryId) {
         $stmt = $this->db->prepare("INSERT INTO topics (subject, reply_count, created_at, started_by, is_locked, is_sticky, category_id) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id, category_id");

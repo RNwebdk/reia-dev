@@ -359,6 +359,17 @@ blockquote {
     }
 }
 @media (min-width: 320px) and (max-width: 480px) {
+    .main-header nav {
+        display: block;
+        margin: 0 auto;
+    }
+    .main-header nav ul {
+        margin-top: 0;
+    }
+    .main-header nav ul li {
+        display: block;
+        text-align: center;
+    }
     table.infobox {
         display: block;
         float: none;

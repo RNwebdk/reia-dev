@@ -72,7 +72,7 @@ function generateQuoteButtons() {
 
     topicPosts.forEach((post) => {
         let quoteButton = post.querySelector(".post-quote");
-        let username = post.querySelector(".post-username").innerText;
+        let username = post.querySelector(".post-username").textContent;
         let content = post.querySelector(".post-content").innerText;
 
         console.log(post);
@@ -81,9 +81,8 @@ function generateQuoteButtons() {
         console.log(content);
 
         quoteButton.addEventListener("click", () => {
-            let str = `*${username} wrote*: <br>
-            bq. ${content}<br>`;
-            replyContent.innerText = str;
+            let str = `<blockquote>*${username} wrote:*\n${content}\n</blockquote>`
+            replyContent.value = str;
         }, false);
     });
 }

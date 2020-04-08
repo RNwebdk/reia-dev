@@ -89,11 +89,11 @@ class ForumController {
                 header("Location: /forum/topic" . $topicId);
                 exit();
             }
-            $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user["id"], $topicId);
+            $post = $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user["id"], $topicId);
             $this->model->updateTopic($this->user["id"], date("Y-m-d H:i:s"), $topicId);
             $this->model->updateLatestTopic($topic["category_id"], $topicId);
             set_flash("Post created successfully!", "success");
-            header("Location: /forum/topic/" . $topicId);
+            header("Location: /forum/topic/" . $topicId . "#post" . $post["id"]);
             exit();
         }
     }

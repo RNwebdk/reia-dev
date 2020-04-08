@@ -30,7 +30,7 @@
                 <section class="post-info" id="post{{ post.id }}">
                     <p>
                         <a href="#post{{ post.id }}">#{{ post.id }}</a><span class="post-date">{{ post.created_at|date("Y-m-d H:i:s") }} {{ post.is_modified ? "(modified)" : "" }}</span>
-                        <span class="post-options"><!-- <a class="post-quote">Quote</a> --> {% if post.started_by == user.id %}<a href="/forum/update/{{ post.id }}">Update</a>{% endif %}</p>
+                        <span class="post-options"><!-- <a class="post-quote">Quote</a> -->{% if post.started_by == user.id %}<a href="/forum/update/{{ post.id }}">Update</a>{% endif %}</p>
                     <span class="clear"></span>
                 </section>
                 <section class="post-body">
@@ -55,7 +55,7 @@
         <p>No posts found.</p>
     {% endif %}
     {% if user and not topic.is_locked %}
-        <form action="/forum/topic/{{ topic.id }}" method="post" class="topic-reply">
+        <form action="/forum/topic/{{ topic.id }}" method="post" class="topic-reply" id="reply">
             <caption><strong>Reply</strong></caption>
             <input type="hidden" name="csrf-token" value="{{ csrf_token }}">
             <div>
