@@ -2,79 +2,71 @@
 namespace ReiaDev\Controller;
 
 use ReiaDev\Model\UserModel;
+use ReiaDev\User;
 
 class UserController {
     private $model;
-    private $view;
-    private $user;
+    private \Twig\Environment $twig;
+    private ?User $user;
 
-    public function __construct($model, $view) {
+    public function __construct($model, $twig) {
         $this->model = $model;
-        $this->view = $view;
+        $this->twig = $twig;
 
         if (!empty($_SESSION["user-id"])) {
-            $this->user = $this->model->selectById($_SESSION["user-id"]);
-        }
-    }
-    public function indexGet($username) {
-        $flash = get_flash();
-        destroy_flash();
-        $userProfile = $this->model->selectByUsername($username);
-
-        if ($userProfile) {
-            $title = $userProfile["username"];
+            $u = $this->model->selectById($_SESSION["user-id"]);
+            $this->user = new User($u["id"], $u["username"], $u["email"], $u["avatar"], $u["role"]);
         } else {
-            $title = "User Not Found";
+            $this->user = null;
         }
-        echo $this->view->render("user.twig", ["title" => $title, "user_profile" => $userProfile, "user" => $this->user, "flash" => $flash]);
     }
-    public function profileGet() {
-        $flash = get_flash();
+    protected function render(string $view, array $data): void {
+        $data["flash"] = get_flash();
         destroy_flash();
-        $userId = $_SESSION["user-id"] ?? null;
+        $data["user"] = $this->user;
 
-        if (!$userId) {
+        echo $this->twig->render($view, $data);
+    }
+    public function indexGet($username): void {
+        $userProfile = $this->model->selectByUsername($username);
+        $this->render("user.twig", ["title" => $userProfile["username"] ?? "User Not Found", "user_profile" => $userProfile]);
+    }
+    public function profileGet(): void {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
-        echo $this->view->render("profile.twig", ["title" => $user["username"] ?? "Profile", "user" => $this->user, "flash" => $flash]);
+        $this->render("profile.twig", ["title" => $this->user->username ?? "Profile"]);
     }
-    public function profilePost() {
+    public function profilePost(): void {
         $avatarUrl = $_POST["avatar-url"];
-        $this->model->updateAvatar($avatarUrl, $this->user["id"]);
+        $this->model->updateAvatar($avatarUrl, $this->user->id);
         set_flash("Updated avatar.", "success");
         header("Location: /profile");
         exit();
     }
-    public function adminGet() {
-        $flash = get_flash();
-        destroy_flash();
-        $userId = $_SESSION["user-id"] ?? null;
-
-        if (!$userId) {
+    public function adminGet(): void {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
-        if (!$_SESSION["is-administrator"]) {
+        if ($this->user->role < 2) {
             set_flash("You're not authorized to view this page.", "error");
             header("Location: /");
             exit();
         }
         $users = $this->model->selectAll();
-
-        echo $this->view->render("admin.twig", ["title" => "Administrator Panel", "user" => $this->user, "users" => $users, "flash" => $flash]);
+        $this->render("admin.twig", ["title" => "Administrator Panel", "users" => $users]);
     }
-    public function activateGet($id) {
-        $userId = $_SESSION["user-id"] ?? null;
-
-        if (!$userId) {
+    public function activateGet(int $id): void {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
-        if (!$_SESSION["is-administrator"]) {
+        if ($this->user->role < 2) {
             set_flash("You're not authorized to view this page.", "error");
             header("Location: /");
             exit();
@@ -94,15 +86,13 @@ class UserController {
         header("Location: /admin");
         exit();
     }
-    public function banGet($id) {
-        $userId = $_SESSION["user-id"] ?? null;
-
-        if (!$userId) {
+    public function banGet(int $id): void {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
-        if (!$_SESSION["is-administrator"]) {
+        if ($this->user->role < 2) {
             set_flash("You're not authorized to view this page.", "error");
             header("Location: /");
             exit();
@@ -122,15 +112,13 @@ class UserController {
         header("Location: /admin");
         exit();
     }
-    public function promoteGet($id) {
-        $userId = $_SESSION["user-id"] ?? null;
-
-        if (!$userId) {
+    public function promoteGet(int $id): void {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
-        if (!$_SESSION["is-administrator"]) {
+        if ($this->user->role < 2) {
             set_flash("You're not authorized to view this page.", "error");
             header("Location: /");
             exit();
@@ -150,15 +138,9 @@ class UserController {
         header("Location: /admin");
         exit();
     }
-    public function logoutGet() {
-        $flash = get_flash();
-        destroy_flash();
-        $userId = $_SESSION["user-id"] ?? null;
-
-        if ($userId) {
+    public function logoutGet(): void {
+        if ($this->user) {
             unset($_SESSION["user-id"]);
-            unset($_SESSION["username"]);
-            unset($_SESSION["is-administrator"]);
             set_flash("User logged out successfully.", "success");
             header("Location: /");
             exit();

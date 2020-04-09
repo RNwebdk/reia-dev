@@ -2,29 +2,36 @@
 namespace ReiaDev\Controller;
 
 use ReiaDev\Model\WikiModel;
+use ReiaDev\User;
 
 class WikiController {
     private $model;
-    private $view;
-    private $user;
+    private \Twig\Environment $twig;
+    private ?User $user;
 
-    public function __construct($model, $view, $userModel) {
+    public function __construct($model, $twig, $userModel) {
         $this->model = $model;
-        $this->view = $view;
+        $this->twig = $twig;
 
         if (!empty($_SESSION["user-id"])) {
-            $this->user = $userModel->selectById($_SESSION["user-id"]);
+            $u = $userModel->selectById($_SESSION["user-id"]);
+            $this->user = new User($u["id"], $u["username"], $u["email"], $u["avatar"], $u["role"]);
+        } else {
+            $this->user = null;
         }
     }
-    public function indexGet() {
-        $flash = get_flash();
+    protected function render(string $view, array $data): void {
+        $data["flash"] = get_flash();
         destroy_flash();
-        $articles = $this->model->selectAll();
-        echo $this->view->render("wiki.twig", ["title" => "Wiki", "articles" => $articles, "user" => $this->user, "flash" => $flash]);
+        $data["user"] = $this->user;
+
+        echo $this->twig->render($view, $data);
     }
-    public function articleGet($getSlug) {
-        $flash = get_flash();
-        destroy_flash();
+    public function indexGet(): void {
+        $articles = $this->model->selectAll();
+        $this->render("wiki.twig", ["title" => "Wiki", "articles" => $articles]);
+    }
+    public function articleGet(string $getSlug): void {
         $article = $this->model->selectBySlug($getSlug);
 
         if ($article) {
@@ -36,24 +43,21 @@ class WikiController {
             $body = "";
             header("HTTP/1.1 404 Not Found");
         }
-        echo $this->view->render("wiki.article.twig", ["title" => $title, "article" => $article, "body" => $body, "user" => $this->user, "flash" => $flash, "slug" => $getSlug]);
+        $this->render("wiki.article.twig", ["title" => $title, "article" => $article, "body" => $body, "slug" => $getSlug]);
     }
-    public function createGet($getSlug = "") {
-        $flash = get_flash();
+    public function createGet(string $getSlug = ""): void {
         $formInput = get_form_input();
         $csrfToken = get_csrf_token();
-        destroy_flash();
         destroy_form_input();
-        $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId) {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /wiki");
             exit();
         }
-        echo $this->view->render("wiki.create.twig", ["title" => "Create Article", "user" => $this->user, "flash" => $flash, "slug" => $getSlug, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        $this->render("wiki.create.twig", ["title" => "Create Article", "slug" => $getSlug, "form_input" => $formInput, "csrf_token" => $csrfToken]);
     }
-    public function createPost($getSlug = "") {
+    public function createPost(string $getSlug = ""): void {
         $csrfToken = $_POST["csrf-token"];
         $title = $_POST["title"];
         $slug = to_slug($title);
@@ -79,35 +83,26 @@ class WikiController {
             header("Location: /wiki/create");
             exit();
         } else {
-            $this->model->insert($title, $slug, $body, date("Y-m-d H:i:s"), date("Y-m-d H:i:s"), $this->user["id"]);
+            $this->model->insert($title, $slug, $body, date("Y-m-d H:i:s"), date("Y-m-d H:i:s"), $this->user->id);
             set_flash("Wiki article successfully created!", "success");
             header("Location: /wiki/article/" . $slug);
             exit();
         }
     }
-    public function updateGet($getSlug) {
-        $flash = get_flash();
+    public function updateGet(string $getSlug): void {
         $formInput = get_form_input();
         $csrfToken = get_csrf_token();
-        destroy_flash();
         destroy_form_input();
-        $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId) {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /wiki/article/" . $getSlug);
             exit();
         }
         $article = $this->model->selectBySlug($getSlug);
-
-        if ($article) {
-            $title = $article["title"];
-        } else {
-            $title = $getSlug;
-        }
-        echo $this->view->render("wiki.update.twig", ["title" => "Update " . $title, "article" => $article, "user" => $this->user, "flash" => $flash, "slug" => $getSlug, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        $this->render("wiki.update.twig", ["title" => "Update " . ($article["title"] ?? $getSlug), "article" => $article, "slug" => $getSlug, "form_input" => $formInput, "csrf_token" => $csrfToken]);
     }
-    public function updatePost($getSlug = "") {
+    public function updatePost(string $getSlug = ""): void {
         $csrfToken = $_POST["csrf-token"];
         $article = $this->model->selectBySlug($getSlug);
         $title = $_POST["title"];
@@ -126,42 +121,36 @@ class WikiController {
             header("Location: /wiki/update/" . $getSlug);
             exit();
         } else {
-            $this->model->update($title, $body, date("Y-m-d H:i:s"), $this->user["id"], $getSlug);
+            $this->model->update($title, $body, date("Y-m-d H:i:s"), $this->user->id, $getSlug);
             set_flash("Wiki article successfully updated!", "success");
             header("Location: /wiki/article/" . $getSlug);
             exit();
         }
     }
-    public function searchGet($searchTerm = "") {
-        $flash = get_flash();
-        destroy_flash();
-
+    public function searchGet(string $searchTerm = ""): void {
         if (!empty($searchTerm)) {
             $articles = $this->model->search($searchTerm);
         } else {
             $articles = null;
         }
-        echo $this->view->render("wiki.search.twig", ["title" => "Search", "search_term" => $searchTerm, "articles" => $articles, "user" => $this->user, "flash" => $flash]);
+        $this->render("wiki.search.twig", ["title" => "Search", "search_term" => $searchTerm, "articles" => $articles]);
     }
-    public function searchPost() {
+    public function searchPost(): void {
         $searchTerm = $_POST["search-term"];
         header("Location: /wiki/search/" . $searchTerm);
         exit();
     }
-    public function uploadGet() {
-        $flash = get_flash();
+    public function uploadGet(): void {
         $csrfToken = get_csrf_token();
-        destroy_flash();
-        $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId) {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /wiki");
             exit();
         }
-        echo $this->view->render("wiki.upload.twig", ["title" => "Upload", "user" => $this->user, "flash" => $flash, "csrf_token" => $csrfToken]);
+        $this->render("wiki.upload.twig", ["title" => "Upload", "csrf_token" => $csrfToken]);
     }
-    public function uploadPost() {
+    public function uploadPost(): void {
         $csrfToken = $_POST["csrf-token"];
         $targetDir = $_SERVER["DOCUMENT_ROOT"] . "/uploads/";
 

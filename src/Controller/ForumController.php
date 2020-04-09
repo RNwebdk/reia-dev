@@ -2,32 +2,36 @@
 namespace ReiaDev\Controller;
 
 use ReiaDev\Model\ForumModel;
+use ReiaDev\User;
 
 class ForumController {
-    private $userModel;
     private $model;
-    private $view;
-    private $user;
+    private \Twig\Environment $twig;
+    private ?User $user;
 
-    public function __construct($model, $view, $userModel) {
-        $this->userModel = $userModel;
+    public function __construct($model, $twig, $userModel) {
         $this->model = $model;
-        $this->view = $view;
+        $this->twig = $twig;
 
         if (!empty($_SESSION["user-id"])) {
-            $this->user = $userModel->selectById($_SESSION["user-id"]);
+            $u = $userModel->selectById($_SESSION["user-id"]);
+            $this->user = new User($u["id"], $u["username"], $u["email"], $u["avatar"], $u["role"]);
+        } else {
+            $this->user = null;
         }
     }
-    public function indexGet() {
-        $flash = get_flash();
+    protected function render(string $view, array $data): void {
+        $data["flash"] = get_flash();
         destroy_flash();
-        $categories = $this->model->selectCategories();
+        $data["user"] = $this->user;
 
-        echo $this->view->render("forum.twig", ["title" => "Forums", "categories" => $categories, "user" => $this->user, "flash" => $flash]);
+        echo $this->twig->render($view, $data);
     }
-    public function categoryGet($categoryId) {
-        $flash = get_flash();
-        destroy_flash();
+    public function indexGet(): void {
+        $categories = $this->model->selectCategories();
+        $this->render("forum.twig", ["title" => "Forums", "categories" => $categories]);
+    }
+    public function categoryGet(int $categoryId): void {
         $category = $this->model->selectCategoryById($categoryId);
 
         if ($category) {
@@ -38,13 +42,11 @@ class ForumController {
             exit();
         }
         $topics = $this->model->selectTopics($categoryId);
-        echo $this->view->render("forum.category.twig", ["title" => $title, "category" => $category, "topics" => $topics, "user" => $this->user, "flash" => $flash]);
+        $this->render("forum.category.twig", ["title" => $title, "category" => $category, "topics" => $topics]);
     }
-    public function topicGet($topicId) {
-        $flash = get_flash();
+    public function topicGet(int $topicId): void {
         $formInput = get_form_input();
         $csrfToken = get_csrf_token();
-        destroy_flash();
         destroy_form_input();
         $topic = $this->model->selectTopicById($topicId);
 
@@ -61,9 +63,9 @@ class ForumController {
         foreach ($posts as &$post) {
             $post["content"] = $parser->setDocumentType("html5")->parse($post["content"]);
         }
-        echo $this->view->render("forum.topic.twig", ["title" => $title, "topic" => $topic, "posts" => $posts, "user" => $this->user, "flash" => $flash, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        $this->render("forum.topic.twig", ["title" => $title, "topic" => $topic, "posts" => $posts, "form_input" => $formInput, "csrf_token" => $csrfToken]);
     }
-    public function topicPost($topicId) {
+    public function topicPost(int $topicId): void {
         $csrfToken = $_POST["csrf-token"];
         $content = $_POST["content"];
         $error = "";
@@ -89,30 +91,27 @@ class ForumController {
                 header("Location: /forum/topic" . $topicId);
                 exit();
             }
-            $post = $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user["id"], $topicId);
-            $this->model->updateTopic($this->user["id"], date("Y-m-d H:i:s"), $topicId);
+            $post = $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user->id, $topicId);
+            $this->model->updateTopic($this->user->id, date("Y-m-d H:i:s"), $topicId);
             $this->model->updateLatestTopic($topic["category_id"], $topicId);
             set_flash("Post created successfully!", "success");
             header("Location: /forum/topic/" . $topicId . "#post" . $post["id"]);
             exit();
         }
     }
-    public function createGet($categoryId) {
-        $flash = get_flash();
+    public function createGet(int $categoryId): void {
         $formInput = get_form_input();
         $csrfToken = get_csrf_token();
-        destroy_flash();
         destroy_form_input();
-        $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId) {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /forum/" . $categoryId);
             exit();
         }
-        echo $this->view->render("forum.create.twig", ["title" => "Create Topic", "category_id" => $categoryId, "user" => $this->user, "flash" => $flash, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        $this->render("forum.create.twig", ["title" => "Create Topic", "category_id" => $categoryId, "form_input" => $formInput, "csrf_token" => $csrfToken]);
     }
-    public function createPost($categoryId) {
+    public function createPost(int $categoryId): void {
         $csrfToken = $_POST["csrf-token"];
         $subject = $_POST["subject"];
         $content = $_POST["content"];
@@ -137,10 +136,10 @@ class ForumController {
             header("Location: /forum/create/" . $categoryId);
             exit();
         } else {
-            $topic = $this->model->insertTopic($subject, date("Y-m-d H:i:s"), $this->user["id"], $categoryId);
+            $topic = $this->model->insertTopic($subject, date("Y-m-d H:i:s"), $this->user->id, $categoryId);
 
             if (!empty($topic)) {
-                $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user["id"], $topic["id"]);
+                $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user->id, $topic["id"]);
                 $this->model->updateLatestTopic($topic["category_id"], $topic["id"]);
                 set_flash("Topic created successfully!", "success");
                 header("Location: /forum/topic/" . $topic["id"]);
@@ -153,15 +152,12 @@ class ForumController {
             }
         }
     }
-    public function updateGet($postId) {
-        $flash = get_flash();
+    public function updateGet(int $postId): void {
         $formInput = get_form_input();
         $csrfToken = get_csrf_token();
-        destroy_flash();
         destroy_form_input();
-        $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId) {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /forum");
             exit();
@@ -169,7 +165,7 @@ class ForumController {
         $post = $this->model->selectPostById($postId);
 
         if ($post) {
-            if ($post["started_by"] !== $this->user["id"]) {
+            if ($post["started_by"] !== $this->user->id) {
                 set_flash("You don't have permission to edit this post.", "error");
                 header("Location: /forum/topic/" . $post["topic_id"]);
                 exit();
@@ -179,9 +175,9 @@ class ForumController {
             header("Location: /forum");
             exit();
         }
-        echo $this->view->render("forum.update.twig", ["title" => "Update Post", "post" => $post, "user" => $this->user, "flash" => $flash, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        $this->render("forum.update.twig", ["title" => "Update Post", "post" => $post, "form_input" => $formInput, "csrf_token" => $csrfToken]);
     }
-    public function updatePost($postId) {
+    public function updatePost(int $postId): void {
         $csrfToken = $_POST["csrf-token"];
         $content = $_POST["content"];
         $error = "";
@@ -206,15 +202,13 @@ class ForumController {
             exit();
         }
     }
-    public function lockTopic($id) {
-        $userId = $_SESSION["user-id"] ?? null;
-
-        if (!$userId) {
+    public function lockTopic(int $id): void {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
-        if (!$_SESSION["is-administrator"]) {
+        if ($this->user->role < 2) {
             set_flash("You're not authorized to do that.", "error");
             header("Location: /forum/topic/" . $id);
             exit();
@@ -225,15 +219,13 @@ class ForumController {
         header("Location: /forum/topic/" . $id);
         exit();
     }
-    public function unlockTopic($id) {
-        $userId = $_SESSION["user-id"] ?? null;
-
-        if (!$userId) {
+    public function unlockTopic(int $id): void {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
-        if (!$_SESSION["is-administrator"]) {
+        if ($this->user->role < 2) {
             set_flash("You're not authorized to do that.", "error");
             header("Location: /forum/topic/" . $id);
             exit();
@@ -244,15 +236,13 @@ class ForumController {
         header("Location: /forum/topic/" . $id);
         exit();
     }
-    public function stickyTopic($id) {
-        $userId = $_SESSION["user-id"] ?? null;
-
-        if (!$userId) {
+    public function stickyTopic(int $id): void {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
-        if (!$_SESSION["is-administrator"]) {
+        if ($this->user->role < 2) {
             set_flash("You're not authorized to do that.", "error");
             header("Location: /forum/topic/" . $id);
             exit();
@@ -263,15 +253,13 @@ class ForumController {
         header("Location: /forum/topic/" . $id);
         exit();
     }
-    public function unstickyTopic($id) {
-        $userId = $_SESSION["user-id"] ?? null;
-
-        if (!$userId) {
+    public function unstickyTopic(int $id): void {
+        if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
-        if (!$_SESSION["is-administrator"]) {
+        if ($this->user->role < 2) {
             set_flash("You're not authorized to do that.", "error");
             header("Location: /forum/topic/" . $id);
             exit();

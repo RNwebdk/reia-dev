@@ -54,11 +54,6 @@ class LoginController {
         } else {
             $user = $this->model->selectById($verify["id"]);
             $_SESSION["user-id"] = $user["id"];
-            $_SESSION["username"] = $user["username"];
-
-            if ($user["role"] === 2) {
-                $_SESSION["is-administrator"] = true;
-            }
             set_flash("User logged in successfully.", "success");
             header("Location: /profile");
             exit();

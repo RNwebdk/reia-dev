@@ -2,28 +2,35 @@
 namespace ReiaDev\Controller;
 
 use ReiaDev\Model\UserModel;
+use ReiaDev\User;
 
 class HomeController {
     private $model;
-    private $view;
-    private $user;
+    private \Twig\Environment $twig;
+    private ?User $user;
 
-    public function __construct($model, $view) {
+    public function __construct($model, $twig) {
         $this->model = $model;
-        $this->view = $view;
+        $this->twig = $twig;
 
         if (!empty($_SESSION["user-id"])) {
-            $this->user = $this->model->selectById($_SESSION["user-id"]);
+            $u = $this->model->selectById($_SESSION["user-id"]);
+            $this->user = new User($u["id"], $u["username"], $u["email"], $u["avatar"], $u["role"]);
+        } else {
+            $this->user = null;
         }
     }
-    public function indexGet() {
-        $flash = get_flash();
+    protected function render(string $view, array $data): void {
+        $data["flash"] = get_flash();
         destroy_flash();
-        echo $this->view->render("index.twig", ["title" => "Home", "user" => $this->user, "flash" => $flash]);
+        $data["user"] = $this->user;
+
+        echo $this->twig->render($view, $data);
     }
-    public function aboutGet() {
-        $flash = get_flash();
-        destroy_flash();
-        echo $this->view->render("about.twig", ["title" => "About", "user" => $this->user, "flash" => $flash]);
+    public function indexGet(): void {
+        $this->render("index.twig", ["title" => "Home"]);
+    }
+    public function aboutGet(): void {
+        $this->render("about.twig", ["title" => "About"]);
     }
 }
