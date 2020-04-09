@@ -1,5 +1,15 @@
 {% extends "base.twig" %}
 
+{% block og %}
+    <meta property="og:title" content="{{ title|e }}">
+    <meta property="og:type" content="website">
+    {% if user_profile %}
+        <meta property="og:url" content="https://reia.dev/user/{{ user_profile.username|e }}">
+    {% endif %}
+    <meta property="og:image" content="https://reia.dev/logo.png">
+    <meta property="og:site_name" content="reia.dev">
+{% endblock %}
+
 {% block content %}
     {% if flash %}
         <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>

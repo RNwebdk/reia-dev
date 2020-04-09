@@ -1,5 +1,17 @@
 {% extends "base.twig" %}
 
+{% block og %}
+    <meta property="og:title" content="{{ title|e }}">
+    <meta property="og:type" content="website">
+    {% if article %}
+        <meta property="og:url" content="https://reia.dev/wiki/article/{{ article.slug|e }}">
+    {% else %}
+        <meta property="og:url" content="https://reia.dev/wiki/article/{{ slug|e }}">
+    {% endif %}
+    <meta property="og:image" content="https://reia.dev/logo.png">
+    <meta property="og:site_name" content="reia.dev">
+{% endblock %}
+
 {% block content %}
     {% if flash %}
         <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
