@@ -202,7 +202,7 @@ class ForumController {
             exit();
         }
     }
-    public function lockTopic(int $id): void {
+    public function adminAction(string $action, int $id, int $status): void {
         if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
@@ -213,61 +213,20 @@ class ForumController {
             header("Location: /forum/topic/" . $id);
             exit();
         }
-        $this->model->updateTopicLocked(1, $id);
-
-        set_flash("Locked topic.", "success");
-        header("Location: /forum/topic/" . $id);
-        exit();
-    }
-    public function unlockTopic(int $id): void {
-        if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
-            header("Location: /login");
+        if ($action === "lock") {
+            $this->model->updateTopicLocked($status, $id);
+            set_flash(($status ? "Locked" : "Unlocked") . " topic.", "success");
+            header("Location: /forum/topic/" . $id);
             exit();
-        }
-        if ($this->user->role < 2) {
-            set_flash("You're not authorized to do that.", "error");
+        } elseif ($action === "sticky") {
+            $this->model->updateTopicStickied($status, $id);
+            set_flash(($status ? "Stuck" : "Unstuck") . " topic.", "success");
+            header("Location: /forum/topic/" . $id);
+            exit();
+        } else {
+            set_flash("Unknown administrative action.", "error");
             header("Location: /forum/topic/" . $id);
             exit();
         }
-        $this->model->updateTopicLocked(0, $id);
-
-        set_flash("Unlocked topic.", "success");
-        header("Location: /forum/topic/" . $id);
-        exit();
-    }
-    public function stickyTopic(int $id): void {
-        if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
-            header("Location: /login");
-            exit();
-        }
-        if ($this->user->role < 2) {
-            set_flash("You're not authorized to do that.", "error");
-            header("Location: /forum/topic/" . $id);
-            exit();
-        }
-        $this->model->updateTopicStickied(1, $id);
-
-        set_flash("Stuck topic.", "success");
-        header("Location: /forum/topic/" . $id);
-        exit();
-    }
-    public function unstickyTopic(int $id): void {
-        if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
-            header("Location: /login");
-            exit();
-        }
-        if ($this->user->role < 2) {
-            set_flash("You're not authorized to do that.", "error");
-            header("Location: /forum/topic/" . $id);
-            exit();
-        }
-        $this->model->updateTopicStickied(0, $id);
-
-        set_flash("Unstuck topic.", "success");
-        header("Location: /forum/topic/" . $id);
-        exit();
     }
 }

@@ -111,17 +111,8 @@ $router->mount("/forum", function () use ($router, $container) {
     $router->post("/update/(\d+)", function ($id) use ($container) {
         return $container["forumController"]->updatePost($id);
     });
-    $router->get("/topic/lock/(\d+)", function ($id) use ($container) {
-        return $container["forumController"]->lockTopic($id);
-    });
-    $router->get("/topic/unlock/(\d+)", function ($id) use ($container) {
-        return $container["forumController"]->unlockTopic($id);
-    });
-    $router->get("/topic/sticky/(\d+)", function ($id) use ($container) {
-        return $container["forumController"]->stickyTopic($id);
-    });
-    $router->get("/topic/unsticky/(\d+)", function ($id) use ($container) {
-        return $container["forumController"]->unstickyTopic($id);
+    $router->get("/admin/(\w+)/(\d+)/(\d+)", function ($action, $id, $status) use ($container) {
+        return $container["forumController"]->adminAction($action, $id, $status);
     });
 });
 $router->set404(function () use ($container) {

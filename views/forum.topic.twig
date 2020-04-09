@@ -12,15 +12,15 @@
     <p class="topic-options">
         {% if user.role == 2 %}
             {% if not topic.is_locked %}
-                <a href="/forum/topic/lock/{{ topic.id }}">Lock Topic</a>
+                <a href="/forum/admin/lock/{{ topic.id }}/1">Lock Topic</a>
             {% else %}
-                <a href="/forum/topic/unlock/{{ topic.id }}">Unlock Topic</a>
+                <a href="/forum/admin/lock/{{ topic.id }}/0">Unlock Topic</a>
             {% endif %}
             |
             {% if not topic.is_sticky %}
-                <a href="/forum/topic/sticky/{{ topic.id }}">Sticky Topic</a>
+                <a href="/forum/admin/sticky/{{ topic.id }}/1">Sticky Topic</a>
             {% else %}
-                <a href="/forum/topic/unsticky/{{ topic.id }}">Unsticky Topic</a>
+                <a href="/forum/admin/sticky/{{ topic.id }}/0">Unsticky Topic</a>
             {% endif %}
         {% endif %}
     </p>
