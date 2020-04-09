@@ -17,7 +17,7 @@ class RegisterController {
         destroy_flash();
         $userId = $_SESSION["user-id"] ?? null;
 
-        if ($userId && $_SESSION["is-authenticated"]) {
+        if ($userId) {
             set_flash("You're already logged in.", "warning");
             header("Location: /profile");
             exit();

@@ -12,7 +12,7 @@ class WikiController {
         $this->model = $model;
         $this->view = $view;
 
-        if (!empty($_SESSION["user-id"]) || !empty($_SESSION["is-authenticated"])) {
+        if (!empty($_SESSION["user-id"])) {
             $this->user = $userModel->selectById($_SESSION["user-id"]);
         }
     }
@@ -46,7 +46,7 @@ class WikiController {
         destroy_form_input();
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /wiki");
             exit();
@@ -93,7 +93,7 @@ class WikiController {
         destroy_form_input();
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /wiki/article/" . $getSlug);
             exit();
@@ -154,7 +154,7 @@ class WikiController {
         destroy_flash();
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /wiki");
             exit();

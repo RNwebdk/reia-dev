@@ -12,7 +12,7 @@ class UserController {
         $this->model = $model;
         $this->view = $view;
 
-        if (!empty($_SESSION["user-id"]) || !empty($_SESSION["is-authenticated"])) {
+        if (!empty($_SESSION["user-id"])) {
             $this->user = $this->model->selectById($_SESSION["user-id"]);
         }
     }
@@ -33,7 +33,7 @@ class UserController {
         destroy_flash();
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
@@ -52,7 +52,7 @@ class UserController {
         destroy_flash();
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
@@ -69,7 +69,7 @@ class UserController {
     public function activateGet($id) {
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
@@ -97,7 +97,7 @@ class UserController {
     public function banGet($id) {
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
@@ -125,7 +125,7 @@ class UserController {
     public function promoteGet($id) {
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
@@ -155,10 +155,9 @@ class UserController {
         destroy_flash();
         $userId = $_SESSION["user-id"] ?? null;
 
-        if ($userId && $_SESSION["is-authenticated"]) {
+        if ($userId) {
             unset($_SESSION["user-id"]);
             unset($_SESSION["username"]);
-            unset($_SESSION["is-authenticated"]);
             unset($_SESSION["is-administrator"]);
             set_flash("User logged out successfully.", "success");
             header("Location: /");

@@ -12,7 +12,7 @@ class HomeController {
         $this->model = $model;
         $this->view = $view;
 
-        if (!empty($_SESSION["user-id"]) || !empty($_SESSION["is-authenticated"])) {
+        if (!empty($_SESSION["user-id"])) {
             $this->user = $this->model->selectById($_SESSION["user-id"]);
         }
     }

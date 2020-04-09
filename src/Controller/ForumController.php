@@ -14,7 +14,7 @@ class ForumController {
         $this->model = $model;
         $this->view = $view;
 
-        if (!empty($_SESSION["user-id"]) || !empty($_SESSION["is-authenticated"])) {
+        if (!empty($_SESSION["user-id"])) {
             $this->user = $userModel->selectById($_SESSION["user-id"]);
         }
     }
@@ -105,7 +105,7 @@ class ForumController {
         destroy_form_input();
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /forum/" . $categoryId);
             exit();
@@ -161,7 +161,7 @@ class ForumController {
         destroy_form_input();
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /forum");
             exit();
@@ -209,7 +209,7 @@ class ForumController {
     public function lockTopic($id) {
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
@@ -228,7 +228,7 @@ class ForumController {
     public function unlockTopic($id) {
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
@@ -247,7 +247,7 @@ class ForumController {
     public function stickyTopic($id) {
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();
@@ -266,7 +266,7 @@ class ForumController {
     public function unstickyTopic($id) {
         $userId = $_SESSION["user-id"] ?? null;
 
-        if (!$userId || !$_SESSION["is-authenticated"]) {
+        if (!$userId) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
             exit();

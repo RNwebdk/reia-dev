@@ -19,7 +19,7 @@ class LoginController {
         destroy_form_input();
         $userId = $_SESSION["user-id"] ?? null;
 
-        if ($userId && $_SESSION["is-authenticated"]) {
+        if ($userId) {
             set_flash("You're already logged in.", "warning");
             header("Location: /profile");
             exit();
@@ -55,7 +55,6 @@ class LoginController {
             $user = $this->model->selectById($verify["id"]);
             $_SESSION["user-id"] = $user["id"];
             $_SESSION["username"] = $user["username"];
-            $_SESSION["is-authenticated"] = true;
 
             if ($user["role"] === 2) {
                 $_SESSION["is-administrator"] = true;
