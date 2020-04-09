@@ -60,7 +60,7 @@ class UserController {
         $users = $this->model->selectAll();
         $this->render("admin.twig", ["title" => "Administrator Panel", "users" => $users]);
     }
-    public function activateGet(int $id): void {
+    public function adminAction(string $action, int $id, int $status): void {
         if (!$this->user) {
             set_flash("Please login to view this page.", "error");
             header("Location: /login");
@@ -74,63 +74,20 @@ class UserController {
         $currentUser = $this->model->selectById($id);
 
         if ($currentUser) {
-            if ($currentUser["role"] > 0) {
-                set_flash("This user is already activated.", "error");
+            if ($currentUser["role"] === $status) {
+                set_flash("The user's role is already set to this status.", "warning");
             } else {
-                $this->model->updateRole(1, $id);
-                set_flash("Activated user " . $currentUser["username"] . " successfully!", "success");
-            }
-        } else {
-            set_flash("No user by the ID of " . $id . " exists.", "error");
-        }
-        header("Location: /admin");
-        exit();
-    }
-    public function banGet(int $id): void {
-        if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
-            header("Location: /login");
-            exit();
-        }
-        if ($this->user->role < 2) {
-            set_flash("You're not authorized to view this page.", "error");
-            header("Location: /");
-            exit();
-        }
-        $currentUser = $this->model->selectById($id);
-
-        if ($currentUser) {
-            if ($currentUser["role"] === -1) {
-                set_flash("This user is already banned.", "error");
-            } else {
-                $this->model->updateRole(-1, $id);
-                set_flash("Banned user " . $currentUser["username"] . " successfully!", "success");
-            }
-        } else {
-            set_flash("No user by the ID of " . $id . " exists.", "error");
-        }
-        header("Location: /admin");
-        exit();
-    }
-    public function promoteGet(int $id): void {
-        if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
-            header("Location: /login");
-            exit();
-        }
-        if ($this->user->role < 2) {
-            set_flash("You're not authorized to view this page.", "error");
-            header("Location: /");
-            exit();
-        }
-        $currentUser = $this->model->selectById($id);
-
-        if ($currentUser) {
-            if ($currentUser["role"] === 2) {
-                set_flash("This user is already an administrator.", "error");
-            } else {
-                $this->model->updateRole(2, $id);
-                set_flash("Promoted user " . $currentUser["username"] . " to administrator successfully!", "success");
+                if ($action === "activate") {
+                    $flashAction = "Activated";
+                } elseif ($action === "ban") {
+                    $flashAction = "Banned";
+                } elseif ($action === "promote") {
+                    $flashAction = "Promoted";
+                } else {
+                    $flashAction = "Did something to";
+                }
+                set_flash($flashAction . " user " . $currentUser["username"] . " successfully!", "success");
+                $this->model->updateRole($status, $id);
             }
         } else {
             set_flash("No user by the ID of " . $id . " exists.", "error");

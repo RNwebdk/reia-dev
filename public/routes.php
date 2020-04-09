@@ -35,6 +35,10 @@ $router->mount("/admin", function () use ($router, $container) {
     $router->get("/", function () use ($container) {
         return $container["userController"]->adminGet();
     });
+    $router->get("/(\w+)/(\d+)/(\d+|-\d+)", function ($action, $id, $status) use ($container) {
+        return $container["userController"]->adminAction($action, $id, $status);
+    });
+/*
     $router->get("/activate/(\d+)", function ($id) use ($container) {
         return $container["userController"]->activateGet($id);
     });
@@ -44,6 +48,7 @@ $router->mount("/admin", function () use ($router, $container) {
     $router->get("/promote/(\d+)", function ($id) use ($container) {
         return $container["userController"]->promoteGet($id);
     });
+*/
 });
 $router->mount("/wiki", function () use ($router, $container) {
     $router->get("/", function () use ($container) {
