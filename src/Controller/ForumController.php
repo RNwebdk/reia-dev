@@ -2,16 +2,19 @@
 namespace ReiaDev\Controller;
 
 use ReiaDev\Model\ForumModel;
+use ReiaDev\Flash;
 use ReiaDev\User;
 
 class ForumController {
     private $model;
     private \Twig\Environment $twig;
+    private Flash $flash;
     private ?User $user;
 
-    public function __construct($model, $twig, $userModel) {
+    public function __construct($model, $twig, $flash, $userModel) {
         $this->model = $model;
         $this->twig = $twig;
+        $this->flash = $flash;
 
         if (!empty($_SESSION["user-id"])) {
             $u = $userModel->selectById($_SESSION["user-id"]);
@@ -21,8 +24,7 @@ class ForumController {
         }
     }
     protected function render(string $view, array $data): void {
-        $data["flash"] = get_flash();
-        destroy_flash();
+        $data["flash"] = $this->flash->getSession();
         $data["user"] = $this->user;
 
         echo $this->twig->render($view, $data);
@@ -37,7 +39,7 @@ class ForumController {
         if ($category) {
             $title = "Forums - " . $category["name"];
         } else {
-            set_flash("No category found.", "warning");
+            $this->flash->setData("No category found.", "warning");
             header("Location: /forum");
             exit();
         }
@@ -53,7 +55,7 @@ class ForumController {
         if ($topic) {
             $title = "Forums - " . $topic["subject"];
         } else {
-            set_flash("No topic found.", "warning");
+            $this->flash->setData("No topic found.", "warning");
             header("Location: /forum");
             exit();
         }
@@ -79,24 +81,22 @@ class ForumController {
             $error .= "Content cannot be longer than 4096 characters.";
         }
         if (!empty($error)) {
-            set_flash($error, "error");
+            $this->flash->setData($error, "error");
             set_form_input(["content" => $content]);
             header("Location: /forum/topic/" . $topicId);
-            exit();
         } else {
             $topic = $this->model->selectTopicById($topicId);
 
             if ($topic["is_locked"]) {
-                set_flash("This topic is locked. No replies can be made.", "error");
+                $this->flash->setData("This topic is locked. No replies can be made.", "error");
                 header("Location: /forum/topic" . $topicId);
                 exit();
             }
             $post = $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user->id, $topicId);
             $this->model->updateTopic($this->user->id, date("Y-m-d H:i:s"), $topicId);
             $this->model->updateLatestTopic($topic["category_id"], $topicId);
-            set_flash("Post created successfully!", "success");
+            $this->flash->setData("Post created successfully!", "success");
             header("Location: /forum/topic/" . $topicId . "#post" . $post["id"]);
-            exit();
         }
     }
     public function createGet(int $categoryId): void {
@@ -105,7 +105,7 @@ class ForumController {
         destroy_form_input();
 
         if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
+            $this->flash->setData("Please login to view this page.", "error");
             header("Location: /forum/" . $categoryId);
             exit();
         }
@@ -131,24 +131,21 @@ class ForumController {
             $error .= "Content cannot be longer than 4096 characters.";
         }
         if (!empty($error)) {
-            set_flash($error, "error");
+            $this->flash->setData($error, "error");
             set_form_input(["subject" => $subject, "content" => $content]);
             header("Location: /forum/create/" . $categoryId);
-            exit();
         } else {
             $topic = $this->model->insertTopic($subject, date("Y-m-d H:i:s"), $this->user->id, $categoryId);
 
             if (!empty($topic)) {
                 $this->model->insertPost($content, date("Y-m-d H:i:s"), $this->user->id, $topic["id"]);
                 $this->model->updateLatestTopic($topic["category_id"], $topic["id"]);
-                set_flash("Topic created successfully!", "success");
+                $this->flash->setData("Topic created successfully!", "success");
                 header("Location: /forum/topic/" . $topic["id"]);
-                exit();
             } else {
-                set_flash("Something went wrong creating your topic.", "error");
+                $this->flash->setData("Something went wrong creating your topic.", "error");
                 set_form_input(["subject" => $subject, "content" => $content]);
                 header("Location: /forum/create/" . $categoryId);
-                exit();
             }
         }
     }
@@ -158,7 +155,7 @@ class ForumController {
         destroy_form_input();
 
         if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
+            $this->flash->setData("Please login to view this page.", "error");
             header("Location: /forum");
             exit();
         }
@@ -166,12 +163,12 @@ class ForumController {
 
         if ($post) {
             if ($post["started_by"] !== $this->user->id) {
-                set_flash("You don't have permission to edit this post.", "error");
+                $this->flash->setData("You don't have permission to edit this post.", "error");
                 header("Location: /forum/topic/" . $post["topic_id"]);
                 exit();
             }
         } else {
-            set_flash("Cannot locate post.", "error");
+            $this->flash->setData("Cannot locate post.", "error");
             header("Location: /forum");
             exit();
         }
@@ -191,42 +188,35 @@ class ForumController {
             $error .= "Content cannot be longer than 4096 characters.";
         }
         if (!empty($error)) {
-            set_flash($error, "error");
+            $this->flash->setData($error, "error");
             set_form_input(["content" => $content]);
             header("Location: /forum/update/" . $postId);
-            exit();
         } else {
             $post = $this->model->updatePost($content, $postId, );
-            set_flash("Post updated successfully!", "success");
+            $this->flash->setData("Post updated successfully!", "success");
             header("Location: /forum/topic/" . $post["topic_id"]);
-            exit();
         }
     }
     public function adminAction(string $action, int $id, int $status): void {
         if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
+            $this->flash->setData("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
         if ($this->user->role < 2) {
-            set_flash("You're not authorized to do that.", "error");
+            $this->flash->setData("You're not authorized to do that.", "error");
             header("Location: /forum/topic/" . $id);
             exit();
         }
         if ($action === "lock") {
             $this->model->updateTopicLocked($status, $id);
-            set_flash(($status ? "Locked" : "Unlocked") . " topic.", "success");
-            header("Location: /forum/topic/" . $id);
-            exit();
+            $this->flash->setData(($status ? "Locked" : "Unlocked") . " topic.", "success");
         } elseif ($action === "sticky") {
             $this->model->updateTopicStickied($status, $id);
-            set_flash(($status ? "Stuck" : "Unstuck") . " topic.", "success");
-            header("Location: /forum/topic/" . $id);
-            exit();
+            $this->flash->setData(($status ? "Stuck" : "Unstuck") . " topic.", "success");
         } else {
-            set_flash("Unknown administrative action.", "error");
-            header("Location: /forum/topic/" . $id);
-            exit();
+            $this->flash->setData("Unknown administrative action.", "error");
         }
+        header("Location: /forum/topic/" . $id);
     }
 }

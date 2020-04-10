@@ -2,23 +2,25 @@
 namespace ReiaDev\Controller;
 
 use ReiaDev\Model\RegisterModel;
+use ReiaDev\Flash;
 
 class RegisterController {
     private $model;
     private $view;
+    private Flash $flash;
 
-    public function __construct($model, $view) {
+    public function __construct($model, $view, $flash) {
         $this->model = $model;
         $this->view = $view;
+        $this->flash = $flash;
     }
     public function indexGet() {
-        $flash = get_flash();
+        $flash = $this->flash->getSession();
         $csrfToken = get_csrf_token();
-        destroy_flash();
         $userId = $_SESSION["user-id"] ?? null;
 
         if ($userId) {
-            set_flash("You're already logged in.", "warning");
+            $this->flash->setData("You're already logged in.", "warning");
             header("Location: /profile");
             exit();
         }
@@ -55,16 +57,14 @@ class RegisterController {
             $error .= "A user already exists with the supplied username or e-mail address.<br>";
         }
         if (!empty($error)) {
-            set_flash($error, "error");
+            $this->flash->setData($error, "error");
             set_form_input(["username" => $username, "email" => $email]);
             header("Location: /register");
-            exit();
         } else {
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
             $this->model->insert($username, $passwordHash, $email, 0);
-            set_flash("User registered successfully.", "success");
+            $this->flash->setData("User registered successfully.", "success");
             header("Location: /login");
-            exit();
         }
     }
 }

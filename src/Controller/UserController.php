@@ -2,16 +2,19 @@
 namespace ReiaDev\Controller;
 
 use ReiaDev\Model\UserModel;
+use ReiaDev\Flash;
 use ReiaDev\User;
 
 class UserController {
     private $model;
     private \Twig\Environment $twig;
+    private Flash $flash;
     private ?User $user;
 
-    public function __construct($model, $twig) {
+    public function __construct($model, $twig, $flash) {
         $this->model = $model;
         $this->twig = $twig;
+        $this->flash = $flash;
 
         if (!empty($_SESSION["user-id"])) {
             $u = $this->model->selectById($_SESSION["user-id"]);
@@ -21,8 +24,7 @@ class UserController {
         }
     }
     protected function render(string $view, array $data): void {
-        $data["flash"] = get_flash();
-        destroy_flash();
+        $data["flash"] = $this->flash->getSession();
         $data["user"] = $this->user;
 
         echo $this->twig->render($view, $data);
@@ -33,7 +35,7 @@ class UserController {
     }
     public function profileGet(): void {
         if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
+            $this->flash->setData("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
@@ -42,18 +44,17 @@ class UserController {
     public function profilePost(): void {
         $avatarUrl = $_POST["avatar-url"];
         $this->model->updateAvatar($avatarUrl, $this->user->id);
-        set_flash("Updated avatar.", "success");
+        $this->flash->setData("Updated avatar.", "success");
         header("Location: /profile");
-        exit();
     }
     public function adminGet(): void {
         if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
+            $this->flash->setData("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
         if ($this->user->role < 2) {
-            set_flash("You're not authorized to view this page.", "error");
+            $this->flash->setData("You're not authorized to view this page.", "error");
             header("Location: /");
             exit();
         }
@@ -62,12 +63,12 @@ class UserController {
     }
     public function adminAction(string $action, int $id, int $status): void {
         if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
+            $this->flash->setData("Please login to view this page.", "error");
             header("Location: /login");
             exit();
         }
         if ($this->user->role < 2) {
-            set_flash("You're not authorized to view this page.", "error");
+            $this->flash->setData("You're not authorized to view this page.", "error");
             header("Location: /");
             exit();
         }
@@ -75,7 +76,7 @@ class UserController {
 
         if ($currentUser) {
             if ($currentUser["role"] === $status) {
-                set_flash("The user's role is already set to this status.", "warning");
+                $this->flash->setData("The user's role is already set to this status.", "warning");
             } else {
                 if ($action === "activate") {
                     $flashAction = "Activated";
@@ -86,25 +87,22 @@ class UserController {
                 } else {
                     $flashAction = "Did something to";
                 }
-                set_flash($flashAction . " user " . $currentUser["username"] . " successfully!", "success");
+                $this->flash->setData($flashAction . " user " . $currentUser["username"] . " successfully!", "success");
                 $this->model->updateRole($status, $id);
             }
         } else {
-            set_flash("No user by the ID of " . $id . " exists.", "error");
+            $this->flash->setData("No user by the ID of " . $id . " exists.", "error");
         }
         header("Location: /admin");
-        exit();
     }
     public function logoutGet(): void {
         if ($this->user) {
             unset($_SESSION["user-id"]);
-            set_flash("User logged out successfully.", "success");
+            $this->flash->setData("User logged out successfully.", "success");
             header("Location: /");
-            exit();
         } else {
-            set_flash("Please login to view this page.", "error");
+            $this->flash->setData("Please login to view this page.", "error");
             header("Location: /login");
-            exit();
         }
     }
 }

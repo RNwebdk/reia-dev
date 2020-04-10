@@ -2,16 +2,19 @@
 namespace ReiaDev\Controller;
 
 use ReiaDev\Model\UserModel;
+use ReiaDev\Flash;
 use ReiaDev\User;
 
 class HomeController {
     private $model;
     private \Twig\Environment $twig;
+    private Flash $flash;
     private ?User $user;
 
-    public function __construct($model, $twig) {
+    public function __construct($model, $twig, $flash) {
         $this->model = $model;
         $this->twig = $twig;
+        $this->flash = $flash;
 
         if (!empty($_SESSION["user-id"])) {
             $u = $this->model->selectById($_SESSION["user-id"]);
@@ -21,8 +24,7 @@ class HomeController {
         }
     }
     protected function render(string $view, array $data): void {
-        $data["flash"] = get_flash();
-        destroy_flash();
+        $data["flash"] = $this->flash->getSession();
         $data["user"] = $this->user;
 
         echo $this->twig->render($view, $data);

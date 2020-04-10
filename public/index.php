@@ -7,6 +7,7 @@ require_once __DIR__ . "/bootstrap.php";
 
 use Pimple\Container;
 use ReiaDev\Database;
+use ReiaDev\Flash;
 use ReiaDev\Model\UserModel;
 use ReiaDev\Model\RegisterModel;
 use ReiaDev\Model\LoginModel;
@@ -30,6 +31,9 @@ $container["twig"] = function ($c) {
     $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . "/../views");
     return new \Twig\Environment($loader);
 };
+$container["flash"] = function ($c) {
+    return new Flash();
+};
 $container["router"] = function ($c) {
     return new \Bramus\Router\Router();
 };
@@ -49,22 +53,22 @@ $container["forumModel"] = function ($c) {
     return new ForumModel($c["db"]);
 };
 $container["homeController"] = function ($c) {
-    return new HomeController($c["userModel"], $c["twig"]);
+    return new HomeController($c["userModel"], $c["twig"], $c["flash"]);
 };
 $container["registerController"] = function ($c) {
-    return new RegisterController($c["registerModel"], $c["twig"]);
+    return new RegisterController($c["registerModel"], $c["twig"], $c["flash"]);
 };
 $container["loginController"] = function ($c) {
-    return new LoginController($c["loginModel"], $c["twig"]);
+    return new LoginController($c["loginModel"], $c["twig"], $c["flash"]);
 };
 $container["userController"] = function ($c) {
-    return new UserController($c["userModel"], $c["twig"]);
+    return new UserController($c["userModel"], $c["twig"], $c["flash"]);
 };
 $container["wikiController"] = function ($c) {
-    return new WikiController($c["wikiModel"], $c["twig"], $c["userModel"]);
+    return new WikiController($c["wikiModel"], $c["twig"], $c["flash"], $c["userModel"]);
 };
 $container["forumController"] = function ($c) {
-    return new ForumController($c["forumModel"], $c["twig"], $c["userModel"]);
+    return new ForumController($c["forumModel"], $c["twig"], $c["flash"], $c["userModel"]);
 };
 require_once __DIR__ . "/routes.php";
 

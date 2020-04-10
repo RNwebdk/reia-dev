@@ -2,25 +2,27 @@
 namespace ReiaDev\Controller;
 
 use ReiaDev\Model\LoginModel;
+use ReiaDev\Flash;
 
 class LoginController {
     private $model;
     private $view;
+    private Flash $flash;
 
-    public function __construct($model, $view) {
+    public function __construct($model, $view, $flash) {
         $this->model = $model;
         $this->view = $view;
+        $this->flash = $flash;
     }
     public function indexGet() {
-        $flash = get_flash();
+        $flash = $this->flash->getSession();
         $formInput = get_form_input();
         $csrfToken = get_csrf_token();
-        destroy_flash();
         destroy_form_input();
         $userId = $_SESSION["user-id"] ?? null;
 
         if ($userId) {
-            set_flash("You're already logged in.", "warning");
+            $this->flash->setData("You're already logged in.", "warning");
             header("Location: /profile");
             exit();
         }
@@ -47,16 +49,14 @@ class LoginController {
             $error .= "Invalid login credentials, or your account isn't active.<br>";
         }
         if (!empty($error)) {
-            set_flash($error, "error");
+            $this->flash->setData($error, "error");
             set_form_input(["username" => $username]);
             header("Location: /login");
-            exit();
         } else {
             $user = $this->model->selectById($verify["id"]);
             $_SESSION["user-id"] = $user["id"];
-            set_flash("User logged in successfully.", "success");
+            $this->flash->setData("User logged in successfully.", "success");
             header("Location: /profile");
-            exit();
         }
     }
 }

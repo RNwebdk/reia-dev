@@ -6,7 +6,7 @@ if (!file_exists("articles.json")) {
 }
 function get_database_config(): array {
     if (file_exists(__DIR__ . "/../.env")) {
-        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/../");
+        $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . "/../");
         $dotenv->load();
 
         $config["database"] = [
@@ -29,15 +29,6 @@ function get_database_config(): array {
         \PDO::ATTR_EMULATE_PREPARES => false
     ];
     return $config["database"];
-}
-function set_flash(string $message, string $type): void {
-    $_SESSION["flash"] = ["message" => $message, "type" => $type];
-}
-function get_flash(): ?array {
-    return $_SESSION["flash"] ?? null;
-}
-function destroy_flash(): void {
-    unset($_SESSION["flash"]);
 }
 function set_form_input(array $data): void {
     $_SESSION["form-input"] = $data;

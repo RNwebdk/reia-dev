@@ -2,16 +2,19 @@
 namespace ReiaDev\Controller;
 
 use ReiaDev\Model\WikiModel;
+use ReiaDev\Flash;
 use ReiaDev\User;
 
 class WikiController {
     private $model;
     private \Twig\Environment $twig;
+    private Flash $flash;
     private ?User $user;
 
-    public function __construct($model, $twig, $userModel) {
+    public function __construct($model, $twig, $flash, $userModel) {
         $this->model = $model;
         $this->twig = $twig;
+        $this->flash = $flash;
 
         if (!empty($_SESSION["user-id"])) {
             $u = $userModel->selectById($_SESSION["user-id"]);
@@ -21,8 +24,7 @@ class WikiController {
         }
     }
     protected function render(string $view, array $data): void {
-        $data["flash"] = get_flash();
-        destroy_flash();
+        $data["flash"] = $this->flash->getSession();
         $data["user"] = $this->user;
 
         echo $this->twig->render($view, $data);
@@ -51,7 +53,7 @@ class WikiController {
         destroy_form_input();
 
         if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
+            $this->flash->setData("Please login to view this page.", "error");
             header("Location: /wiki");
             exit();
         }
@@ -78,15 +80,13 @@ class WikiController {
             $error .= "An article by this title already exists.<br>";
         }
         if (!empty($error)) {
-            set_flash($error, "error");
+            $this->flash->setData($error, "error");
             set_form_input(["title" => $title, "body" => $body]);
             header("Location: /wiki/create");
-            exit();
         } else {
             $this->model->insert($title, $slug, $body, date("Y-m-d H:i:s"), date("Y-m-d H:i:s"), $this->user->id);
-            set_flash("Wiki article successfully created!", "success");
+            $this->flash->setData("Wiki article successfully created!", "success");
             header("Location: /wiki/article/" . $slug);
-            exit();
         }
     }
     public function updateGet(string $getSlug): void {
@@ -95,7 +95,7 @@ class WikiController {
         destroy_form_input();
 
         if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
+            $this->flash->setData("Please login to view this page.", "error");
             header("Location: /wiki/article/" . $getSlug);
             exit();
         }
@@ -116,15 +116,13 @@ class WikiController {
             $error .= "Title must match slug. Only capitalization and symbols may be changed.";
         }
         if (!empty($error)) {
-            set_flash($error, "error");
+            $this->flash->setData($error, "error");
             set_form_input(["title" => $title, "body" => $body]);
             header("Location: /wiki/update/" . $getSlug);
-            exit();
         } else {
             $this->model->update($title, $body, date("Y-m-d H:i:s"), $this->user->id, $getSlug);
-            set_flash("Wiki article successfully updated!", "success");
+            $this->flash->setData("Wiki article successfully updated!", "success");
             header("Location: /wiki/article/" . $getSlug);
-            exit();
         }
     }
     public function searchGet(string $searchTerm = ""): void {
@@ -138,13 +136,12 @@ class WikiController {
     public function searchPost(): void {
         $searchTerm = $_POST["search-term"];
         header("Location: /wiki/search/" . $searchTerm);
-        exit();
     }
     public function uploadGet(): void {
         $csrfToken = get_csrf_token();
 
         if (!$this->user) {
-            set_flash("Please login to view this page.", "error");
+            $this->flash->setData("Please login to view this page.", "error");
             header("Location: /wiki");
             exit();
         }
@@ -158,7 +155,7 @@ class WikiController {
             mkdir($targetDir, 0777, true);
         }
         if ($_FILES["upload"]["error"] === 4) {
-            set_flash("No file uploaded.", "error");
+            $this->flash->setData("No file uploaded.", "error");
             header("Location: /wiki/upload");
             exit();
         }
@@ -190,19 +187,12 @@ class WikiController {
             $uploadValid = false;
         }
         if (!$uploadValid) {
-            set_flash($error, "error");
-            header("Location: /wiki/upload");
-            exit();
+            $this->flash->setData($error, "error");
+        } elseif (move_uploaded_file($_FILES["upload"]["tmp_name"], $targetFile)) {
+            $this->flash->setData("Uploaded image " . basename($_FILES["upload"]["name"]) . " successfully!", "success");
         } else {
-            if (move_uploaded_file($_FILES["upload"]["tmp_name"], $targetFile)) {
-                set_flash("Uploaded image " . basename($_FILES["upload"]["name"]) . " successfully!", "success");
-                header("Location: /wiki/upload");
-                exit();
-            } else {
-                set_flash("There was an issue uploading your image.", "error");
-                header("Location: /wiki/upload");
-                exit();
-            }
+            $this->flash->setData("There was an issue uploading your image.", "error");
         }
+        header("Location: /wiki/upload");
     }
 }
