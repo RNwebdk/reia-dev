@@ -3,20 +3,22 @@ namespace ReiaDev\Controller;
 
 use ReiaDev\Model\RegisterModel;
 use ReiaDev\Flash;
+use ReiaDev\CSRFToken;
 
 class RegisterController {
     private $model;
     private $view;
     private Flash $flash;
+    private CSRFToken $csrfToken;
 
-    public function __construct($model, $view, $flash) {
+    public function __construct($model, $view, $flash, $csrfToken) {
         $this->model = $model;
         $this->view = $view;
         $this->flash = $flash;
+        $this->csrfToken = $csrfToken;
     }
     public function indexGet() {
         $flash = $this->flash->getSession();
-        $csrfToken = get_csrf_token();
         $userId = $_SESSION["user-id"] ?? null;
 
         if ($userId) {
@@ -24,7 +26,7 @@ class RegisterController {
             header("Location: /profile");
             exit();
         }
-        echo $this->view->render("register.twig", ["title" => "Register", "flash" => $flash, "csrf_token" => $csrfToken]);
+        echo $this->view->render("register.twig", ["title" => "Register", "flash" => $flash, "csrf_token" => $this->csrfToken->getSession()]);
     }
     public function indexPost() {
         $csrfToken = $_POST["csrf-token"];
@@ -33,7 +35,7 @@ class RegisterController {
         $email = $_POST["email"];
         $error = "";
 
-        if (!hash_equals($csrfToken, get_csrf_token())) {
+        if (!$this->csrfToken->verify($csrfToken)) {
             $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
         }
         if (empty($username)) {

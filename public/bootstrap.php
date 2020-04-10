@@ -30,15 +30,6 @@ function getDatabaseConfig(): array {
     ];
     return $config["database"];
 }
-function create_csrf_token(): void {
-    $_SESSION["csrf-token"] = bin2hex(random_bytes(32));
-}
-function get_csrf_token(): ?string {
-    return $_SESSION["csrf-token"] ?? null;
-}
-function destroy_csrf_token(): void {
-    unset($_SESSION["csrf-token"]);
-}
 function setFormInput(array $data): void {
     $_SESSION["form-input"] = $data;
 }

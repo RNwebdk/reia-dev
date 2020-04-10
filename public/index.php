@@ -21,9 +21,6 @@ use ReiaDev\Controller\LoginController;
 use ReiaDev\Controller\WikiController;
 use ReiaDev\Controller\ForumController;
 
-if (!get_csrf_token()) {
-    create_csrf_token();
-}
 $container = new Container();
 $container["db"] = function ($c) {
     return (new Database(getDatabaseConfig()))->getPDO();
@@ -38,6 +35,9 @@ $container["flash"] = function ($c) {
 $container["csrfToken"] = function ($c) {
     return new CSRFToken();
 };
+if (!$container["csrfToken"]->getSession()) {
+    $container["csrfToken"]->setSession();
+}
 $container["router"] = function ($c) {
     return new \Bramus\Router\Router();
 };
@@ -60,19 +60,19 @@ $container["homeController"] = function ($c) {
     return new HomeController($c["userModel"], $c["twig"], $c["flash"]);
 };
 $container["registerController"] = function ($c) {
-    return new RegisterController($c["registerModel"], $c["twig"], $c["flash"]);
+    return new RegisterController($c["registerModel"], $c["twig"], $c["flash"], $c["csrfToken"]);
 };
 $container["loginController"] = function ($c) {
-    return new LoginController($c["loginModel"], $c["twig"], $c["flash"]);
+    return new LoginController($c["loginModel"], $c["twig"], $c["flash"], $c["csrfToken"]);
 };
 $container["userController"] = function ($c) {
-    return new UserController($c["userModel"], $c["twig"], $c["flash"]);
+    return new UserController($c["userModel"], $c["twig"], $c["flash"], $c["csrfToken"]);
 };
 $container["wikiController"] = function ($c) {
-    return new WikiController($c["wikiModel"], $c["twig"], $c["flash"], $c["userModel"]);
+    return new WikiController($c["wikiModel"], $c["twig"], $c["flash"], $c["csrfToken"], $c["userModel"]);
 };
 $container["forumController"] = function ($c) {
-    return new ForumController($c["forumModel"], $c["twig"], $c["flash"], $c["userModel"]);
+    return new ForumController($c["forumModel"], $c["twig"], $c["flash"], $c["csrfToken"], $c["userModel"]);
 };
 require_once __DIR__ . "/routes.php";
 

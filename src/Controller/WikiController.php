@@ -3,18 +3,21 @@ namespace ReiaDev\Controller;
 
 use ReiaDev\Model\WikiModel;
 use ReiaDev\Flash;
+use ReiaDev\CSRFToken;
 use ReiaDev\User;
 
 class WikiController {
     private $model;
     private \Twig\Environment $twig;
     private Flash $flash;
+    private CSRFToken $csrfToken;
     private ?User $user;
 
-    public function __construct($model, $twig, $flash, $userModel) {
+    public function __construct($model, $twig, $flash, $csrfToken, $userModel) {
         $this->model = $model;
         $this->twig = $twig;
         $this->flash = $flash;
+        $this->csrfToken = $csrfToken;
 
         if (!empty($_SESSION["user-id"])) {
             $u = $userModel->selectById($_SESSION["user-id"]);
@@ -58,7 +61,6 @@ class WikiController {
     }
     public function createGet(string $getSlug = ""): void {
         $formInput = getFormInput();
-        $csrfToken = get_csrf_token();
         destroyFormInput();
 
         if (!$this->user) {
@@ -66,7 +68,7 @@ class WikiController {
             header("Location: /wiki");
             exit();
         }
-        $this->render("wiki.create.twig", ["title" => "Create Article", "slug" => $getSlug, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        $this->render("wiki.create.twig", ["title" => "Create Article", "slug" => $getSlug, "form_input" => $formInput, "csrf_token" => $this->csrfToken->getSession()]);
     }
     public function createPost(string $getSlug = ""): void {
         $csrfToken = $_POST["csrf-token"];
@@ -75,7 +77,7 @@ class WikiController {
         $body = $_POST["body"];
         $error = "";
 
-        if (!hash_equals($csrfToken, get_csrf_token())) {
+        if (!$this->csrfToken->verify($csrfToken)) {
             $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
         }
         if (empty($title)) {
@@ -100,7 +102,6 @@ class WikiController {
     }
     public function updateGet(string $getSlug): void {
         $formInput = getFormInput();
-        $csrfToken = get_csrf_token();
         destroyFormInput();
 
         if (!$this->user) {
@@ -109,7 +110,7 @@ class WikiController {
             exit();
         }
         $article = $this->model->selectBySlug($getSlug);
-        $this->render("wiki.update.twig", ["title" => "Update " . ($article["title"] ?? $getSlug), "article" => $article, "slug" => $getSlug, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        $this->render("wiki.update.twig", ["title" => "Update " . ($article["title"] ?? $getSlug), "article" => $article, "slug" => $getSlug, "form_input" => $formInput, "csrf_token" => $this->csrfToken->getSession()]);
     }
     public function updatePost(string $getSlug = ""): void {
         $csrfToken = $_POST["csrf-token"];
@@ -118,7 +119,7 @@ class WikiController {
         $body = $_POST["body"];
         $error = "";
 
-        if (!hash_equals($csrfToken, get_csrf_token())) {
+        if (!$this->csrfToken->verify($csrfToken)) {
             $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
         }
         if ($this->toSlug($title) !== $article["slug"]) {
@@ -147,14 +148,12 @@ class WikiController {
         header("Location: /wiki/search/" . $searchTerm);
     }
     public function uploadGet(): void {
-        $csrfToken = get_csrf_token();
-
         if (!$this->user) {
             $this->flash->setData("Please login to view this page.", "error");
             header("Location: /wiki");
             exit();
         }
-        $this->render("wiki.upload.twig", ["title" => "Upload", "csrf_token" => $csrfToken]);
+        $this->render("wiki.upload.twig", ["title" => "Upload", "csrf_token" => $this->csrfToken->getSession()]);
     }
     public function uploadPost(): void {
         $csrfToken = $_POST["csrf-token"];
@@ -179,7 +178,7 @@ class WikiController {
         $error = "";
         $check = getimagesize($_FILES["upload"]["tmp_name"]);
 
-        if (!hash_equals($csrfToken, get_csrf_token())) {
+        if (!$this->csrfToken->verify($csrfToken)) {
             $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
             $uploadValid = false;
         }

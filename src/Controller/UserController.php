@@ -3,18 +3,21 @@ namespace ReiaDev\Controller;
 
 use ReiaDev\Model\UserModel;
 use ReiaDev\Flash;
+use ReiaDev\CSRFToken;
 use ReiaDev\User;
 
 class UserController {
     private $model;
     private \Twig\Environment $twig;
     private Flash $flash;
+    private CSRFToken $csrfToken;
     private ?User $user;
 
-    public function __construct($model, $twig, $flash) {
+    public function __construct($model, $twig, $flash, $csrfToken) {
         $this->model = $model;
         $this->twig = $twig;
         $this->flash = $flash;
+        $this->csrfToken = $csrfToken;
 
         if (!empty($_SESSION["user-id"])) {
             $u = $this->model->selectById($_SESSION["user-id"]);

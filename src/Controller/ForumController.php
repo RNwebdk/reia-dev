@@ -3,18 +3,21 @@ namespace ReiaDev\Controller;
 
 use ReiaDev\Model\ForumModel;
 use ReiaDev\Flash;
+use ReiaDev\CSRFToken;
 use ReiaDev\User;
 
 class ForumController {
     private $model;
     private \Twig\Environment $twig;
     private Flash $flash;
+    private CSRFToken $csrfToken;
     private ?User $user;
 
-    public function __construct($model, $twig, $flash, $userModel) {
+    public function __construct($model, $twig, $flash, $csrfToken, $userModel) {
         $this->model = $model;
         $this->twig = $twig;
         $this->flash = $flash;
+        $this->csrfToken = $csrfToken;
 
         if (!empty($_SESSION["user-id"])) {
             $u = $userModel->selectById($_SESSION["user-id"]);
@@ -48,7 +51,6 @@ class ForumController {
     }
     public function topicGet(int $topicId): void {
         $formInput = getFormInput();
-        $csrfToken = get_csrf_token();
         destroyFormInput();
         $topic = $this->model->selectTopicById($topicId);
 
@@ -65,14 +67,14 @@ class ForumController {
         foreach ($posts as &$post) {
             $post["content"] = $parser->setDocumentType("html5")->parse($post["content"]);
         }
-        $this->render("forum.topic.twig", ["title" => $title, "topic" => $topic, "posts" => $posts, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        $this->render("forum.topic.twig", ["title" => $title, "topic" => $topic, "posts" => $posts, "form_input" => $formInput, "csrf_token" => $this->csrfToken->getSession()]);
     }
     public function topicPost(int $topicId): void {
         $csrfToken = $_POST["csrf-token"];
         $content = $_POST["content"];
         $error = "";
 
-        if (!hash_equals($csrfToken, get_csrf_token())) {
+        if (!$this->csrfToken->verify($csrfToken)) {
             $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
         }
         if (empty($content)) {
@@ -101,7 +103,6 @@ class ForumController {
     }
     public function createGet(int $categoryId): void {
         $formInput = getFormInput();
-        $csrfToken = get_csrf_token();
         destroyFormInput();
 
         if (!$this->user) {
@@ -109,7 +110,7 @@ class ForumController {
             header("Location: /forum/" . $categoryId);
             exit();
         }
-        $this->render("forum.create.twig", ["title" => "Create Topic", "category_id" => $categoryId, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        $this->render("forum.create.twig", ["title" => "Create Topic", "category_id" => $categoryId, "form_input" => $formInput, "csrf_token" => $this->csrfToken->getSession()]);
     }
     public function createPost(int $categoryId): void {
         $csrfToken = $_POST["csrf-token"];
@@ -117,7 +118,7 @@ class ForumController {
         $content = $_POST["content"];
         $error = "";
 
-        if (!hash_equals($csrfToken, get_csrf_token())) {
+        if (!$this->csrfToken->verify($csrfToken)) {
             $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
         }
         if (empty($subject)) {
@@ -151,7 +152,6 @@ class ForumController {
     }
     public function updateGet(int $postId): void {
         $formInput = getFormInput();
-        $csrfToken = get_csrf_token();
         destroyFormInput();
 
         if (!$this->user) {
@@ -172,14 +172,14 @@ class ForumController {
             header("Location: /forum");
             exit();
         }
-        $this->render("forum.update.twig", ["title" => "Update Post", "post" => $post, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        $this->render("forum.update.twig", ["title" => "Update Post", "post" => $post, "form_input" => $formInput, "csrf_token" => $this->csrfToken->getSession()]);
     }
     public function updatePost(int $postId): void {
         $csrfToken = $_POST["csrf-token"];
         $content = $_POST["content"];
         $error = "";
 
-        if (!hash_equals($csrfToken, get_csrf_token())) {
+        if (!$this->csrfToken->verify($csrfToken)) {
             $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
         }
         if (empty($content)) {

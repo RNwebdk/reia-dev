@@ -3,21 +3,23 @@ namespace ReiaDev\Controller;
 
 use ReiaDev\Model\LoginModel;
 use ReiaDev\Flash;
+use ReiaDev\CSRFToken;
 
 class LoginController {
     private $model;
     private $view;
     private Flash $flash;
+    private CSRFToken $csrfToken;
 
-    public function __construct($model, $view, $flash) {
+    public function __construct($model, $view, $flash, $csrfToken) {
         $this->model = $model;
         $this->view = $view;
         $this->flash = $flash;
+        $this->csrfToken = $csrfToken;
     }
     public function indexGet() {
         $flash = $this->flash->getSession();
         $formInput = getFormInput();
-        $csrfToken = get_csrf_token();
         destroyFormInput();
         $userId = $_SESSION["user-id"] ?? null;
 
@@ -26,7 +28,7 @@ class LoginController {
             header("Location: /profile");
             exit();
         }
-        echo $this->view->render("login.twig", ["title" => "Login", "flash" => $flash, "form_input" => $formInput, "csrf_token" => $csrfToken]);
+        echo $this->view->render("login.twig", ["title" => "Login", "flash" => $flash, "form_input" => $formInput, "csrf_token" => $this->csrfToken->getSession()]);
     }
     public function indexPost() {
         $csrfToken = $_POST["csrf-token"];
@@ -34,7 +36,7 @@ class LoginController {
         $password = $_POST["password"];
         $error = "";
 
-        if (!hash_equals($csrfToken, get_csrf_token())) {
+        if (!$this->csrfToken->verify($csrfToken)) {
             $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
         }
         if (empty($username)) {
