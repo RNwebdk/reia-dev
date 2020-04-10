@@ -8,6 +8,7 @@ require_once __DIR__ . "/bootstrap.php";
 use Pimple\Container;
 use ReiaDev\Database;
 use ReiaDev\Flash;
+use ReiaDev\CSRFToken;
 use ReiaDev\Model\UserModel;
 use ReiaDev\Model\RegisterModel;
 use ReiaDev\Model\LoginModel;
@@ -25,7 +26,7 @@ if (!get_csrf_token()) {
 }
 $container = new Container();
 $container["db"] = function ($c) {
-    return (new Database(get_database_config()))->getPDO();
+    return (new Database(getDatabaseConfig()))->getPDO();
 };
 $container["twig"] = function ($c) {
     $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . "/../views");
@@ -33,6 +34,9 @@ $container["twig"] = function ($c) {
 };
 $container["flash"] = function ($c) {
     return new Flash();
+};
+$container["csrfToken"] = function ($c) {
+    return new CSRFToken();
 };
 $container["router"] = function ($c) {
     return new \Bramus\Router\Router();

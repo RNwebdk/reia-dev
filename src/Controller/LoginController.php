@@ -16,9 +16,9 @@ class LoginController {
     }
     public function indexGet() {
         $flash = $this->flash->getSession();
-        $formInput = get_form_input();
+        $formInput = getFormInput();
         $csrfToken = get_csrf_token();
-        destroy_form_input();
+        destroyFormInput();
         $userId = $_SESSION["user-id"] ?? null;
 
         if ($userId) {
@@ -50,7 +50,7 @@ class LoginController {
         }
         if (!empty($error)) {
             $this->flash->setData($error, "error");
-            set_form_input(["username" => $username]);
+            setFormInput(["username" => $username]);
             header("Location: /login");
         } else {
             $user = $this->model->selectById($verify["id"]);

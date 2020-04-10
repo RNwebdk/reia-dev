@@ -47,9 +47,9 @@ class ForumController {
         $this->render("forum.category.twig", ["title" => $title, "category" => $category, "topics" => $topics]);
     }
     public function topicGet(int $topicId): void {
-        $formInput = get_form_input();
+        $formInput = getFormInput();
         $csrfToken = get_csrf_token();
-        destroy_form_input();
+        destroyFormInput();
         $topic = $this->model->selectTopicById($topicId);
 
         if ($topic) {
@@ -82,7 +82,7 @@ class ForumController {
         }
         if (!empty($error)) {
             $this->flash->setData($error, "error");
-            set_form_input(["content" => $content]);
+            setFormInput(["content" => $content]);
             header("Location: /forum/topic/" . $topicId);
         } else {
             $topic = $this->model->selectTopicById($topicId);
@@ -100,9 +100,9 @@ class ForumController {
         }
     }
     public function createGet(int $categoryId): void {
-        $formInput = get_form_input();
+        $formInput = getFormInput();
         $csrfToken = get_csrf_token();
-        destroy_form_input();
+        destroyFormInput();
 
         if (!$this->user) {
             $this->flash->setData("Please login to view this page.", "error");
@@ -132,7 +132,7 @@ class ForumController {
         }
         if (!empty($error)) {
             $this->flash->setData($error, "error");
-            set_form_input(["subject" => $subject, "content" => $content]);
+            setFormInput(["subject" => $subject, "content" => $content]);
             header("Location: /forum/create/" . $categoryId);
         } else {
             $topic = $this->model->insertTopic($subject, date("Y-m-d H:i:s"), $this->user->id, $categoryId);
@@ -144,15 +144,15 @@ class ForumController {
                 header("Location: /forum/topic/" . $topic["id"]);
             } else {
                 $this->flash->setData("Something went wrong creating your topic.", "error");
-                set_form_input(["subject" => $subject, "content" => $content]);
+                setFormInput(["subject" => $subject, "content" => $content]);
                 header("Location: /forum/create/" . $categoryId);
             }
         }
     }
     public function updateGet(int $postId): void {
-        $formInput = get_form_input();
+        $formInput = getFormInput();
         $csrfToken = get_csrf_token();
-        destroy_form_input();
+        destroyFormInput();
 
         if (!$this->user) {
             $this->flash->setData("Please login to view this page.", "error");
@@ -189,7 +189,7 @@ class ForumController {
         }
         if (!empty($error)) {
             $this->flash->setData($error, "error");
-            set_form_input(["content" => $content]);
+            setFormInput(["content" => $content]);
             header("Location: /forum/update/" . $postId);
         } else {
             $post = $this->model->updatePost($content, $postId, );

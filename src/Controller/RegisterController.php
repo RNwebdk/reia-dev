@@ -58,7 +58,7 @@ class RegisterController {
         }
         if (!empty($error)) {
             $this->flash->setData($error, "error");
-            set_form_input(["username" => $username, "email" => $email]);
+            setFormInput(["username" => $username, "email" => $email]);
             header("Location: /register");
         } else {
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);

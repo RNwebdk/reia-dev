@@ -29,6 +29,15 @@ class WikiController {
 
         echo $this->twig->render($view, $data);
     }
+    public function toSlug(string $str): string {
+        $str = strtolower($str);
+        $str = trim($str);
+        $str = preg_replace("/[^a-z0-9 -]/", "", $str);
+        $str = preg_replace("/\s+/", " ", $str);
+        $str = str_replace(" ", "-", $str);
+    
+        return $str;
+    }
     public function indexGet(): void {
         $articles = $this->model->selectAll();
         $this->render("wiki.twig", ["title" => "Wiki", "articles" => $articles]);
@@ -48,9 +57,9 @@ class WikiController {
         $this->render("wiki.article.twig", ["title" => $title, "article" => $article, "body" => $body, "slug" => $getSlug]);
     }
     public function createGet(string $getSlug = ""): void {
-        $formInput = get_form_input();
+        $formInput = getFormInput();
         $csrfToken = get_csrf_token();
-        destroy_form_input();
+        destroyFormInput();
 
         if (!$this->user) {
             $this->flash->setData("Please login to view this page.", "error");
@@ -62,7 +71,7 @@ class WikiController {
     public function createPost(string $getSlug = ""): void {
         $csrfToken = $_POST["csrf-token"];
         $title = $_POST["title"];
-        $slug = to_slug($title);
+        $slug = $this->toSlug($title);
         $body = $_POST["body"];
         $error = "";
 
@@ -81,7 +90,7 @@ class WikiController {
         }
         if (!empty($error)) {
             $this->flash->setData($error, "error");
-            set_form_input(["title" => $title, "body" => $body]);
+            setFormInput(["title" => $title, "body" => $body]);
             header("Location: /wiki/create");
         } else {
             $this->model->insert($title, $slug, $body, date("Y-m-d H:i:s"), date("Y-m-d H:i:s"), $this->user->id);
@@ -90,9 +99,9 @@ class WikiController {
         }
     }
     public function updateGet(string $getSlug): void {
-        $formInput = get_form_input();
+        $formInput = getFormInput();
         $csrfToken = get_csrf_token();
-        destroy_form_input();
+        destroyFormInput();
 
         if (!$this->user) {
             $this->flash->setData("Please login to view this page.", "error");
@@ -112,12 +121,12 @@ class WikiController {
         if (!hash_equals($csrfToken, get_csrf_token())) {
             $error .= "Possible CSRF attack detected. Please contact the server administrator.<br>";
         }
-        if (to_slug($title) !== $article["slug"]) {
+        if ($this->toSlug($title) !== $article["slug"]) {
             $error .= "Title must match slug. Only capitalization and symbols may be changed.";
         }
         if (!empty($error)) {
             $this->flash->setData($error, "error");
-            set_form_input(["title" => $title, "body" => $body]);
+            setFormInput(["title" => $title, "body" => $body]);
             header("Location: /wiki/update/" . $getSlug);
         } else {
             $this->model->update($title, $body, date("Y-m-d H:i:s"), $this->user->id, $getSlug);
@@ -151,6 +160,11 @@ class WikiController {
         $csrfToken = $_POST["csrf-token"];
         $targetDir = $_SERVER["DOCUMENT_ROOT"] . "/uploads/";
 
+        if (!$this->user) {
+            $this->flash->setData("Please login to view this page.", "error");
+            header("Location: /wiki");
+            exit();
+        }
         if (!file_exists($targetDir)) {
             mkdir($targetDir, 0777, true);
         }

@@ -4,7 +4,7 @@ if (!file_exists("articles.json")) {
     fwrite($fp, "[]\n");
     fclose($fp);
 }
-function get_database_config(): array {
+function getDatabaseConfig(): array {
     if (file_exists(__DIR__ . "/../.env")) {
         $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . "/../");
         $dotenv->load();
@@ -30,15 +30,6 @@ function get_database_config(): array {
     ];
     return $config["database"];
 }
-function set_form_input(array $data): void {
-    $_SESSION["form-input"] = $data;
-}
-function get_form_input(): ?array {
-    return $_SESSION["form-input"] ?? null;
-}
-function destroy_form_input(): void {
-    unset($_SESSION["form-input"]);
-}
 function create_csrf_token(): void {
     $_SESSION["csrf-token"] = bin2hex(random_bytes(32));
 }
@@ -48,12 +39,12 @@ function get_csrf_token(): ?string {
 function destroy_csrf_token(): void {
     unset($_SESSION["csrf-token"]);
 }
-function to_slug(string $str): string {
-    $str = strtolower($str);
-    $str = trim($str);
-    $str = preg_replace("/[^a-z0-9 -]/", "", $str);
-    $str = preg_replace("/\s+/", " ", $str);
-    $str = str_replace(" ", "-", $str);
-
-    return $str;
+function setFormInput(array $data): void {
+    $_SESSION["form-input"] = $data;
+}
+function getFormInput(): ?array {
+    return $_SESSION["form-input"] ?? null;
+}
+function destroyFormInput(): void {
+    unset($_SESSION["form-input"]);
 }
