@@ -162,6 +162,10 @@ class WikiController {
         }
         $this->render("wiki.upload.twig", ["title" => "Upload", "csrf_token" => $this->csrfToken->getSession()]);
     }
+    public function uploadsGet(): void {
+        $uploads = $this->model->selectUploadedImages();
+        $this->render("wiki.uploads.twig", ["title" => "Uploads", "uploads" => $uploads]);
+    }
     public function uploadPost(): void {
         $csrfToken = $_POST["csrf-token"];
         $targetDir = $_SERVER["DOCUMENT_ROOT"] . "/uploads/";
@@ -210,6 +214,7 @@ class WikiController {
             $this->flash->setData($error, "error");
         } elseif (move_uploaded_file($_FILES["upload"]["tmp_name"], $targetFile)) {
             $this->flash->setData("Uploaded image " . basename($_FILES["upload"]["name"]) . " successfully!", "success");
+            $this->model->insertUploadedImage($this->user->id, "/uploads/" . basename($_FILES["upload"]["name"]), $check[0], $check[1]);
         } else {
             $this->flash->setData("There was an issue uploading your image.", "error");
         }

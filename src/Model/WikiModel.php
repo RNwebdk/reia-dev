@@ -32,4 +32,13 @@ class WikiModel extends Model {
         $stmt->execute();
         return $stmt->fetchAll();
     }
+    public function selectUploadedImages(): array {
+        $stmt = $this->db->prepare("SELECT ui.id, ui.created_by, ui.url, ui.width, ui.height, u.id as user_id, u.username FROM uploaded_images ui INNER JOIN users u ON ui.created_by = u.id");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+    public function insertUploadedImage($createdBy, $url, $width, $height): void {
+        $stmt = $this->db->prepare("INSERT INTO uploaded_images (created_by, url, width, height) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$createdBy, $url, $width, $height]);
+    }
 }

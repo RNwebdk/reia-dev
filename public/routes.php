@@ -79,6 +79,9 @@ $router->mount("/wiki", function () use ($router, $container) {
     $router->post("/upload", function () use ($container) {
         return $container["wikiController"]->uploadPost();
     });
+    $router->get("/uploads", function () use ($container) {
+        return $container["wikiController"]->uploadsGet();
+    });
 });
 $router->mount("/forum", function () use ($router, $container) {
     $router->get("/", function () use ($container) {

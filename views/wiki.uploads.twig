@@ -1,0 +1,29 @@
+{% extends "base.twig" %}
+
+{% block og %}
+    <meta property="og:title" content="{{ title|e }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://reia.dev/wiki/uploads">
+    <meta property="og:image" content="https://reia.dev/logo.png">
+    <meta property="og:site_name" content="reia.dev">
+{% endblock %}
+
+{% block content %}
+    {% if flash %}
+        <p class="alert alert-{{ flash.type }}">{{ flash.message|raw }}</p>
+    {% endif %}
+    {% if uploads|length > 0 %}
+        <section>
+        {% for upload in uploads %}
+            <article class="uploads-result">
+                <p><img src="{{ upload.url|e }}" width="{{ upload.width }}" height="{{ upload.height }}" alt="uploaded image" class="uploaded-image-preview"></p>
+                <p>URL: {{ upload.url|e }}</p>
+                <p>Dimensions: {{ upload.width }}x{{ upload.height }}</p>
+                <p>Created by: <a href="/users/{{ upload.username|e }}">{{ upload.username|e }}</a></p>
+            </article>
+        {% endfor %}
+        </section>
+    {% else %}
+        <p>No uploaded images found.</p>
+    {% endif %}
+{% endblock %}
