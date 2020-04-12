@@ -6,6 +6,7 @@ require_once __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . "/bootstrap.php";
 
 use Pimple\Container;
+use ReiaDev\Version;
 use ReiaDev\Database;
 use ReiaDev\Flash;
 use ReiaDev\CSRFToken;
@@ -22,6 +23,9 @@ use ReiaDev\Controller\WikiController;
 use ReiaDev\Controller\ForumController;
 
 $container = new Container();
+$container["version"] = function ($c) {
+    return new Version(0, 1, 0);
+};
 $container["db"] = function ($c) {
     return (new Database(getDatabaseConfig()))->getPDO();
 };
@@ -57,7 +61,7 @@ $container["forumModel"] = function ($c) {
     return new ForumModel($c["db"]);
 };
 $container["homeController"] = function ($c) {
-    return new HomeController($c["userModel"], $c["twig"], $c["flash"]);
+    return new HomeController($c["userModel"], $c["twig"], $c["flash"], $c["version"]);
 };
 $container["registerController"] = function ($c) {
     return new RegisterController($c["registerModel"], $c["twig"], $c["flash"], $c["csrfToken"]);
