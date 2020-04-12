@@ -19,7 +19,7 @@
                 <p><img src="{{ upload.url|e }}" width="{{ upload.width }}" height="{{ upload.height }}" alt="uploaded image" class="uploaded-image-preview"></p>
                 <p>URL: {{ upload.url|e }}</p>
                 <p>Dimensions: {{ upload.width }}x{{ upload.height }}</p>
-                <p>Created by: <a href="/users/{{ upload.username|e }}">{{ upload.username|e }}</a></p>
+                <p>Created by: <a href="/user/{{ upload.username|e }}">{{ upload.username|e }}</a></p>
             </article>
         {% endfor %}
         </section>
