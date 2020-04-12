@@ -15,12 +15,10 @@ class WikiModel extends Model {
     public function insert($title, $slug, $body, $createdAt, $lastModified, $modifiedBy) {
         $stmt = $this->db->prepare("INSERT INTO articles (title, slug, body, created_at, last_modified, modified_by) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->execute([$title, $slug, $body, $createdAt, $lastModified, $modifiedBy]);
-        $this->generateJSON();
     }
     public function update($title, $body, $lastModified, $modifiedBy, $slug) {
         $stmt = $this->db->prepare("UPDATE articles SET title = ?, body = ?, last_modified = ?, modified_by = ? WHERE slug = ?");
         $stmt->execute([$title, $body, $lastModified, $modifiedBy, $slug]);
-        $this->generateJSON();
     }
     public function search($term) {
         $stmt = $this->db->prepare("SELECT a.title, a.slug, a.last_modified, a.modified_by, u.id as user_id, u.username FROM articles a INNER JOIN users u ON a.modified_by = u.id WHERE title ILIKE ? OR body ILIKE ?");
@@ -29,20 +27,9 @@ class WikiModel extends Model {
         $stmt->execute();
         return $stmt->fetchAll();
     }
-    public function generateJSON() {
+    public function selectSlugs(): array {
         $stmt = $this->db->prepare("SELECT slug FROM articles");
         $stmt->execute();
-        $articles = $stmt->fetchAll();
-
-        if (!empty($articles)) {
-            $json = [];
-
-            foreach ($articles as $article) {
-                $json[] = $article["slug"];
-            }
-            $fp = fopen("articles.json", "w");
-            fwrite($fp, json_encode($json, JSON_PRETTY_PRINT) . "\n");
-            fclose($fp);
-        }
+        return $stmt->fetchAll();
     }
 }

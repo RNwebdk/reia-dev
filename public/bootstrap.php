@@ -1,7 +1,12 @@
 <?php
-if (!file_exists("articles.json")) {
+function createArticlesJson(array $slugs): void {
+    $json = [];
+
+    foreach ($slugs as $slug) {
+        $json[] = $slug["slug"];
+    }
     $fp = fopen("articles.json", "w");
-    fwrite($fp, "[]\n");
+    fwrite($fp, json_encode($json, JSON_PRETTY_PRINT) . "\n");
     fclose($fp);
 }
 function getDatabaseConfig(): array {

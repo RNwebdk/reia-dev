@@ -25,6 +25,9 @@ class WikiController {
         } else {
             $this->user = null;
         }
+        if (!file_exists("articles.json")) {
+            createArticlesJson(array());
+        }
     }
     protected function render(string $view, array $data): void {
         $data["flash"] = $this->flash->getSession();
@@ -96,6 +99,8 @@ class WikiController {
             header("Location: /wiki/create");
         } else {
             $this->model->insert($title, $slug, $body, date("Y-m-d H:i:s"), date("Y-m-d H:i:s"), $this->user->id);
+            $slugs = $this->model->selectSlugs();
+            createArticlesJson($slugs);
             $this->flash->setData("Wiki article successfully created!", "success");
             header("Location: /wiki/article/" . $slug);
         }
@@ -131,6 +136,8 @@ class WikiController {
             header("Location: /wiki/update/" . $getSlug);
         } else {
             $this->model->update($title, $body, date("Y-m-d H:i:s"), $this->user->id, $getSlug);
+            $slugs = $this->model->selectSlugs();
+            createArticlesJson($slugs);
             $this->flash->setData("Wiki article successfully updated!", "success");
             header("Location: /wiki/article/" . $getSlug);
         }

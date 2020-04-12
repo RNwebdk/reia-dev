@@ -28,7 +28,7 @@ class LoginController {
             header("Location: /profile");
             exit();
         }
-        echo $this->view->render("login.twig", ["title" => "Login", "flash" => $flash, "form_input" => $formInput, "csrf_token" => $this->csrfToken->getSession()]);
+        echo $this->view->render("login.twig", ["title" => "Login", "form_input" => $formInput, "csrf_token" => $this->csrfToken->getSession()]);
     }
     public function indexPost() {
         $csrfToken = $_POST["csrf-token"];
