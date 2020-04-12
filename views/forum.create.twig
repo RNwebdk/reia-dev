@@ -14,10 +14,13 @@
             <input type="text" name="subject" id="input-subject" size="60" value="{{ form_input ? form_input.subject|e : "" }}">
         </div>
         <div>
-            <textarea name="content" rows="20" cols="80">{{ form_input ? form_input.content|e : "" }}</textarea>
+            <label for="input-content">Content</label>
         </div>
         <div>
-            <button type="submit">Post</button>
+            <textarea name="content" id="input-content" rows="20" cols="80">{{ form_input ? form_input.content|e : "" }}</textarea>
+        </div>
+        <div>
+            <button type="submit" class="form-button">Post</button>
         </div>
     </form>
 {% endblock %}
