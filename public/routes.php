@@ -82,6 +82,9 @@ $router->mount("/wiki", function () use ($router, $container) {
     $router->get("/uploads", function () use ($container) {
         return $container["wikiController"]->uploadsGet();
     });
+    $router->get("/download/([a-z0-9_-]+)", function ($getSlug) use ($container) {
+        return $container["wikiController"]->downloadGet($getSlug);
+    });
 });
 $router->mount("/forum", function () use ($router, $container) {
     $router->get("/", function () use ($container) {

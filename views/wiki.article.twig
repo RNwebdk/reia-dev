@@ -18,7 +18,7 @@
     {% endif %}
     {% if article %}
         {% if user %}
-            <p><a href="/wiki/update/{{ article.slug|e }}" class="article-button">Update Article</a></p>
+            <p><a href="/wiki/update/{{ article.slug|e }}" class="article-button">Update Article</a> <a href="/wiki/download/{{ article.slug|e }}" class="article-button">Download Article</a></p>
             <hr>
         {% endif %}
         <h1>{{ article.title|e }}</h1>

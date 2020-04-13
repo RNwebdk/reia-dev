@@ -220,4 +220,29 @@ class WikiController {
         }
         header("Location: /wiki/upload");
     }
+    public function downloadGet(string $getSlug): void {
+        if (!$this->user) {
+            $this->flash->setData("Please login to view this page.", "error");
+            header("Location: /wiki");
+            exit();
+        }
+
+        $article = $this->model->selectBySlug($getSlug);
+
+        if ($article) {
+            $content = $article["body"];
+
+            if ($content[-1] !== "\n") {
+                $content .= "\n";
+            }
+            header("Content-Description: File Transfer");
+            header("Content-Type: application/octet-stream");
+            header("Content-Disposition: attachment; filename=" . $article["slug"] . ".textile");
+            header("Content-Length: " . strlen($content));
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header("Expires: 0");
+            header("pragma: public");
+            echo $content;
+        }
+    }
 }
